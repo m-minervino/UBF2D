@@ -6146,218 +6146,220 @@ int main(int argc, char** argv) {
 				}
 				//FAR-FIELD elementary aerodynamic force using vorticity-based methods
 				//---Unsteady term (volume integrand)
-				if (!FT_FORM) {
-					//------Spatial gradients of (rho*dV/dt) or (rho*dV'/dt') or (rho*dV/dt')
-					double drhoVtx_dz=NAN, drhoVtz_dx=NAN;
-					if (U_FORM==0) {				//Spatial gradients of (rho*dV/dt)
-						switch (grad_scheme) {
-							case 0:
-								drhoVtx_dz=(1/cell_values[m][k][numVars+compVarsN][t])*
-										((-(nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][27][t]+nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][27][t])/2)*dx_1+
-										(-(nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][27][t]+nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][27][t])/2)*dx_2+
-										(-(nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][27][t]+nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][27][t])/2)*dx_3+
-										(-(nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][27][t]+nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][27][t])/2)*dx_4);
-								drhoVtz_dx=(1/cell_values[m][k][numVars+compVarsN][t])*
-										(((nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][28][t]+nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][28][t])/2)*dz_1+
-										((nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][28][t]+nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][28][t])/2)*dz_2+
-										((nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][28][t]+nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][28][t])/2)*dz_3+
-										((nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][28][t]+nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][28][t])/2)*dz_4);
-								break;
-							case 1:		//Do nothing. spatial gradients will be calculated at grid nodes later on, then averaged to CC in a following step.
-								break;
-							case 2:		//Weighted-Least-Squares
-								double D_1, D_2, D_3, D_4;
-								//---drhoVtx_dz
-								D_1=0; D_2=0; D_3=0; D_4=0;	//Initialization
-								if (k != 0) {
-									D_1=aux_values[m][k - 1][14][t]-aux_values[m][k][14][t];
-								} else {
-									if ((near_ID[m]) || (near_ID[m + 1])) {	//cell is adjacent to the body surface
-										D_1=-2*aux_values[m][k][14][t];
+				if (Lamb_form < 2) {	//Only compute in cases it is needed
+					if (!FT_FORM) {
+						//------Spatial gradients of (rho*dV/dt) or (rho*dV'/dt') or (rho*dV/dt')
+						double drhoVtx_dz=NAN, drhoVtz_dx=NAN;
+						if (U_FORM==0) {				//Spatial gradients of (rho*dV/dt)
+							switch (grad_scheme) {
+								case 0:
+									drhoVtx_dz=(1/cell_values[m][k][numVars+compVarsN][t])*
+											((-(nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][27][t]+nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][27][t])/2)*dx_1+
+											(-(nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][27][t]+nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][27][t])/2)*dx_2+
+											(-(nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][27][t]+nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][27][t])/2)*dx_3+
+											(-(nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][27][t]+nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][27][t])/2)*dx_4);
+									drhoVtz_dx=(1/cell_values[m][k][numVars+compVarsN][t])*
+											(((nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][28][t]+nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][28][t])/2)*dz_1+
+											((nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][28][t]+nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][28][t])/2)*dz_2+
+											((nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][28][t]+nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][28][t])/2)*dz_3+
+											((nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][28][t]+nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][28][t])/2)*dz_4);
+									break;
+								case 1:		//Do nothing. spatial gradients will be calculated at grid nodes later on, then averaged to CC in a following step.
+									break;
+								case 2:		//Weighted-Least-Squares
+									double D_1, D_2, D_3, D_4;
+									//---drhoVtx_dz
+									D_1=0; D_2=0; D_3=0; D_4=0;	//Initialization
+									if (k != 0) {
+										D_1=aux_values[m][k - 1][14][t]-aux_values[m][k][14][t];
 									} else {
-										D_1=aux_values[i_TOT - 2 - m][k][14][t]-aux_values[m][k][14][t];
+										if ((near_ID[m]) || (near_ID[m + 1])) {	//cell is adjacent to the body surface
+											D_1=-2*aux_values[m][k][14][t];
+										} else {
+											D_1=aux_values[i_TOT - 2 - m][k][14][t]-aux_values[m][k][14][t];
+										}
 									}
-								}
-								if (m != i_TOT - 2) {
-									D_2=aux_values[m + 1][k][14][t]-aux_values[m][k][14][t];
-								}
-								if (k != kMax[0] - 2) {
-									D_3=aux_values[m][k + 1][14][t]-aux_values[m][k][14][t];
-								}
-								if (m != 0) {
-									D_4=aux_values[m - 1][k][14][t]-aux_values[m][k][14][t];
-								}
-								drhoVtx_dz=WLS[1][0]*D_1 + WLS[1][1]*D_2 + WLS[1][2]*D_3 + WLS[1][3]*D_4;
-								//---drhoVtz_dx
-								D_1=0; D_2=0; D_3=0; D_4=0;	//Initialization
-								if (k != 0) {
-									D_1=aux_values[m][k - 1][15][t]-aux_values[m][k][15][t];
-								} else {
-									if ((near_ID[m]) || (near_ID[m + 1])) {	//cell is adjacent to the body surface
-										D_1=-2*aux_values[m][k][15][t];
+									if (m != i_TOT - 2) {
+										D_2=aux_values[m + 1][k][14][t]-aux_values[m][k][14][t];
+									}
+									if (k != kMax[0] - 2) {
+										D_3=aux_values[m][k + 1][14][t]-aux_values[m][k][14][t];
+									}
+									if (m != 0) {
+										D_4=aux_values[m - 1][k][14][t]-aux_values[m][k][14][t];
+									}
+									drhoVtx_dz=WLS[1][0]*D_1 + WLS[1][1]*D_2 + WLS[1][2]*D_3 + WLS[1][3]*D_4;
+									//---drhoVtz_dx
+									D_1=0; D_2=0; D_3=0; D_4=0;	//Initialization
+									if (k != 0) {
+										D_1=aux_values[m][k - 1][15][t]-aux_values[m][k][15][t];
 									} else {
-										D_1=aux_values[i_TOT - 2 - m][k][15][t]-aux_values[m][k][15][t];
+										if ((near_ID[m]) || (near_ID[m + 1])) {	//cell is adjacent to the body surface
+											D_1=-2*aux_values[m][k][15][t];
+										} else {
+											D_1=aux_values[i_TOT - 2 - m][k][15][t]-aux_values[m][k][15][t];
+										}
 									}
-								}
-								if (m != i_TOT - 2) {
-									D_2=aux_values[m + 1][k][15][t]-aux_values[m][k][15][t];
-								}
-								if (k != kMax[0] - 2) {
-									D_3=aux_values[m][k + 1][15][t]-aux_values[m][k][15][t];
-								}
-								if (m != 0) {
-									D_4=aux_values[m - 1][k][15][t]-aux_values[m][k][15][t];
-								}
-								drhoVtz_dx=WLS[0][0]*D_1 + WLS[0][1]*D_2 + WLS[0][2]*D_3 + WLS[0][3]*D_4;
-								break;
+									if (m != i_TOT - 2) {
+										D_2=aux_values[m + 1][k][15][t]-aux_values[m][k][15][t];
+									}
+									if (k != kMax[0] - 2) {
+										D_3=aux_values[m][k + 1][15][t]-aux_values[m][k][15][t];
+									}
+									if (m != 0) {
+										D_4=aux_values[m - 1][k][15][t]-aux_values[m][k][15][t];
+									}
+									drhoVtz_dx=WLS[0][0]*D_1 + WLS[0][1]*D_2 + WLS[0][2]*D_3 + WLS[0][3]*D_4;
+									break;
+							}
+						} else if (U_FORM==1) {			//Spatial gradients of (rho*dV'/dt')
+							switch (grad_scheme) {
+								case 0:
+									drhoVtx_dz=(1/cell_values[m][k][numVars+compVarsN][t])*
+											((-(nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][25][t]+nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][25][t])/2)*dx_1+
+											(-(nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][25][t]+nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][25][t])/2)*dx_2+
+											(-(nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][25][t]+nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][25][t])/2)*dx_3+
+											(-(nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][25][t]+nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][25][t])/2)*dx_4);
+									drhoVtz_dx=(1/cell_values[m][k][numVars+compVarsN][t])*
+											(((nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][26][t]+nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][26][t])/2)*dz_1+
+											((nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][26][t]+nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][26][t])/2)*dz_2+
+											((nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][26][t]+nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][26][t])/2)*dz_3+
+											((nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][26][t]+nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][26][t])/2)*dz_4);
+									break;
+								case 1:		//Do nothing. spatial gradients will be calculated at grid nodes later on, then averaged to CC in a following step.
+									break;
+								case 2:		//Weighted-Least-Squares
+									double D_1, D_2, D_3, D_4;
+									//---drhoVtx_dz
+									D_1=0; D_2=0; D_3=0; D_4=0;	//Initialization
+									if (k != 0) {
+										D_1=aux_values[m][k - 1][14][t]-aux_values[m][k][14][t];
+									} else {
+										if ((near_ID[m]) || (near_ID[m + 1])) {	//cell is adjacent to the body surface
+											D_1=-2*aux_values[m][k][14][t];
+										} else {
+											D_1=aux_values[i_TOT - 2 - m][k][14][t]-aux_values[m][k][14][t];
+										}
+									}
+									if (m != i_TOT - 2) {
+										D_2=aux_values[m + 1][k][14][t]-aux_values[m][k][14][t];
+									}
+									if (k != kMax[0] - 2) {
+										D_3=aux_values[m][k + 1][14][t]-aux_values[m][k][14][t];
+									}
+									if (m != 0) {
+										D_4=aux_values[m - 1][k][14][t]-aux_values[m][k][14][t];
+									}
+									drhoVtx_dz=WLS[1][0]*D_1 + WLS[1][1]*D_2 + WLS[1][2]*D_3 + WLS[1][3]*D_4;
+									//---drhoVtz_dx
+									D_1=0; D_2=0; D_3=0; D_4=0;	//Initialization
+									if (k != 0) {
+										D_1=aux_values[m][k - 1][15][t]-aux_values[m][k][15][t];
+									} else {
+										if ((near_ID[m]) || (near_ID[m + 1])) {	//cell is adjacent to the body surface
+											D_1=-2*aux_values[m][k][15][t];
+										} else {
+											D_1=aux_values[i_TOT - 2 - m][k][15][t]-aux_values[m][k][15][t];
+										}
+									}
+									if (m != i_TOT - 2) {
+										D_2=aux_values[m + 1][k][15][t]-aux_values[m][k][15][t];
+									}
+									if (k != kMax[0] - 2) {
+										D_3=aux_values[m][k + 1][15][t]-aux_values[m][k][15][t];
+									}
+									if (m != 0) {
+										D_4=aux_values[m - 1][k][15][t]-aux_values[m][k][15][t];
+									}
+									drhoVtz_dx=WLS[0][0]*D_1 + WLS[0][1]*D_2 + WLS[0][2]*D_3 + WLS[0][3]*D_4;
+									break;
+							}
+						} else if (U_FORM==2) {			//Spatial gradients of (rho*dV/dt')
+							switch (grad_scheme) {
+								case 0:
+									drhoVtx_dz=(1/cell_values[m][k][numVars+compVarsN][t])*
+											((-(nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][25][t]+nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][25][t])/2)*dx_1+
+											(-(nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][25][t]+nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][25][t])/2)*dx_2+
+											(-(nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][25][t]+nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][25][t])/2)*dx_3+
+											(-(nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][25][t]+nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][25][t])/2)*dx_4);
+									drhoVtz_dx=(1/cell_values[m][k][numVars+compVarsN][t])*
+											(((nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][26][t]+nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][26][t])/2)*dz_1+
+											((nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][26][t]+nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][26][t])/2)*dz_2+
+											((nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][26][t]+nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][26][t])/2)*dz_3+
+											((nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][26][t]+nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][26][t])/2)*dz_4);
+									break;
+								case 1:		//Do nothing. spatial gradients will be calculated at grid nodes later on, then averaged to CC in a following step.
+									break;
+								case 2:		//Weighted-Least-Squares
+									double D_1, D_2, D_3, D_4;
+									//---drhoVtx_dz
+									D_1=0; D_2=0; D_3=0; D_4=0;	//Initialization
+									if (k != 0) {
+										D_1=aux_values[m][k - 1][14][t]-aux_values[m][k][14][t];
+									} else {
+										if ((near_ID[m]) || (near_ID[m + 1])) {	//cell is adjacent to the body surface
+											D_1=-2*aux_values[m][k][14][t];
+										} else {
+											D_1=aux_values[i_TOT - 2 - m][k][14][t]-aux_values[m][k][14][t];
+										}
+									}
+									if (m != i_TOT - 2) {
+										D_2=aux_values[m + 1][k][14][t]-aux_values[m][k][14][t];
+									}
+									if (k != kMax[0] - 2) {
+										D_3=aux_values[m][k + 1][14][t]-aux_values[m][k][14][t];
+									}
+									if (m != 0) {
+										D_4=aux_values[m - 1][k][14][t]-aux_values[m][k][14][t];
+									}
+									drhoVtx_dz=WLS[1][0]*D_1 + WLS[1][1]*D_2 + WLS[1][2]*D_3 + WLS[1][3]*D_4;
+									//---drhoVtz_dx
+									D_1=0; D_2=0; D_3=0; D_4=0;	//Initialization
+									if (k != 0) {
+										D_1=aux_values[m][k - 1][15][t]-aux_values[m][k][15][t];
+									} else {
+										if ((near_ID[m]) || (near_ID[m + 1])) {	//cell is adjacent to the body surface
+											D_1=-2*aux_values[m][k][15][t];
+										} else {
+											D_1=aux_values[i_TOT - 2 - m][k][15][t]-aux_values[m][k][15][t];
+										}
+									}
+									if (m != i_TOT - 2) {
+										D_2=aux_values[m + 1][k][15][t]-aux_values[m][k][15][t];
+									}
+									if (k != kMax[0] - 2) {
+										D_3=aux_values[m][k + 1][15][t]-aux_values[m][k][15][t];
+									}
+									if (m != 0) {
+										D_4=aux_values[m - 1][k][15][t]-aux_values[m][k][15][t];
+									}
+									drhoVtz_dx=WLS[0][0]*D_1 + WLS[0][1]*D_2 + WLS[0][2]*D_3 + WLS[0][3]*D_4;
+									break;
+							}
 						}
-					} else if (U_FORM==1) {			//Spatial gradients of (rho*dV'/dt')
-						switch (grad_scheme) {
-							case 0:
-								drhoVtx_dz=(1/cell_values[m][k][numVars+compVarsN][t])*
-										((-(nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][25][t]+nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][25][t])/2)*dx_1+
-										(-(nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][25][t]+nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][25][t])/2)*dx_2+
-										(-(nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][25][t]+nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][25][t])/2)*dx_3+
-										(-(nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][25][t]+nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][25][t])/2)*dx_4);
-								drhoVtz_dx=(1/cell_values[m][k][numVars+compVarsN][t])*
-										(((nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][26][t]+nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][26][t])/2)*dz_1+
-										((nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][26][t]+nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][26][t])/2)*dz_2+
-										((nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][26][t]+nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][26][t])/2)*dz_3+
-										((nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][26][t]+nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][26][t])/2)*dz_4);
-								break;
-							case 1:		//Do nothing. spatial gradients will be calculated at grid nodes later on, then averaged to CC in a following step.
-								break;
-							case 2:		//Weighted-Least-Squares
-								double D_1, D_2, D_3, D_4;
-								//---drhoVtx_dz
-								D_1=0; D_2=0; D_3=0; D_4=0;	//Initialization
-								if (k != 0) {
-									D_1=aux_values[m][k - 1][14][t]-aux_values[m][k][14][t];
-								} else {
-									if ((near_ID[m]) || (near_ID[m + 1])) {	//cell is adjacent to the body surface
-										D_1=-2*aux_values[m][k][14][t];
-									} else {
-										D_1=aux_values[i_TOT - 2 - m][k][14][t]-aux_values[m][k][14][t];
-									}
-								}
-								if (m != i_TOT - 2) {
-									D_2=aux_values[m + 1][k][14][t]-aux_values[m][k][14][t];
-								}
-								if (k != kMax[0] - 2) {
-									D_3=aux_values[m][k + 1][14][t]-aux_values[m][k][14][t];
-								}
-								if (m != 0) {
-									D_4=aux_values[m - 1][k][14][t]-aux_values[m][k][14][t];
-								}
-								drhoVtx_dz=WLS[1][0]*D_1 + WLS[1][1]*D_2 + WLS[1][2]*D_3 + WLS[1][3]*D_4;
-								//---drhoVtz_dx
-								D_1=0; D_2=0; D_3=0; D_4=0;	//Initialization
-								if (k != 0) {
-									D_1=aux_values[m][k - 1][15][t]-aux_values[m][k][15][t];
-								} else {
-									if ((near_ID[m]) || (near_ID[m + 1])) {	//cell is adjacent to the body surface
-										D_1=-2*aux_values[m][k][15][t];
-									} else {
-										D_1=aux_values[i_TOT - 2 - m][k][15][t]-aux_values[m][k][15][t];
-									}
-								}
-								if (m != i_TOT - 2) {
-									D_2=aux_values[m + 1][k][15][t]-aux_values[m][k][15][t];
-								}
-								if (k != kMax[0] - 2) {
-									D_3=aux_values[m][k + 1][15][t]-aux_values[m][k][15][t];
-								}
-								if (m != 0) {
-									D_4=aux_values[m - 1][k][15][t]-aux_values[m][k][15][t];
-								}
-								drhoVtz_dx=WLS[0][0]*D_1 + WLS[0][1]*D_2 + WLS[0][2]*D_3 + WLS[0][3]*D_4;
-								break;
+						//------Unsteady volume integrand
+						if (grad_scheme!=1) {	//Save CPU as these variables will be effectively computed in a following code section
+							AF_elem[m][k][35][t] = cell_values[m][k][numVars + compVarsN + 16][t] * (drhoVtx_dz - drhoVtz_dx) * cell_values[m][k][numVars + compVarsN][t];
+							AF_elem[m][k][36][t] = -cell_values[m][k][numVars + compVarsN + 15][t] * (drhoVtx_dz - drhoVtz_dx) * cell_values[m][k][numVars + compVarsN][t];
 						}
-					} else if (U_FORM==2) {			//Spatial gradients of (rho*dV/dt')
-						switch (grad_scheme) {
-							case 0:
-								drhoVtx_dz=(1/cell_values[m][k][numVars+compVarsN][t])*
-										((-(nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][25][t]+nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][25][t])/2)*dx_1+
-										(-(nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][25][t]+nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][25][t])/2)*dx_2+
-										(-(nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][25][t]+nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][25][t])/2)*dx_3+
-										(-(nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][25][t]+nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][25][t])/2)*dx_4);
-								drhoVtz_dx=(1/cell_values[m][k][numVars+compVarsN][t])*
-										(((nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][26][t]+nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][26][t])/2)*dz_1+
-										((nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][26][t]+nodal_values[m+1][k][rho_id-1][t]*aux_values_N[m+1][k][26][t])/2)*dz_2+
-										((nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][26][t]+nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][26][t])/2)*dz_3+
-										((nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][26][t]+nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][26][t])/2)*dz_4);
-								break;
-							case 1:		//Do nothing. spatial gradients will be calculated at grid nodes later on, then averaged to CC in a following step.
-								break;
-							case 2:		//Weighted-Least-Squares
-								double D_1, D_2, D_3, D_4;
-								//---drhoVtx_dz
-								D_1=0; D_2=0; D_3=0; D_4=0;	//Initialization
-								if (k != 0) {
-									D_1=aux_values[m][k - 1][14][t]-aux_values[m][k][14][t];
-								} else {
-									if ((near_ID[m]) || (near_ID[m + 1])) {	//cell is adjacent to the body surface
-										D_1=-2*aux_values[m][k][14][t];
-									} else {
-										D_1=aux_values[i_TOT - 2 - m][k][14][t]-aux_values[m][k][14][t];
-									}
-								}
-								if (m != i_TOT - 2) {
-									D_2=aux_values[m + 1][k][14][t]-aux_values[m][k][14][t];
-								}
-								if (k != kMax[0] - 2) {
-									D_3=aux_values[m][k + 1][14][t]-aux_values[m][k][14][t];
-								}
-								if (m != 0) {
-									D_4=aux_values[m - 1][k][14][t]-aux_values[m][k][14][t];
-								}
-								drhoVtx_dz=WLS[1][0]*D_1 + WLS[1][1]*D_2 + WLS[1][2]*D_3 + WLS[1][3]*D_4;
-								//---drhoVtz_dx
-								D_1=0; D_2=0; D_3=0; D_4=0;	//Initialization
-								if (k != 0) {
-									D_1=aux_values[m][k - 1][15][t]-aux_values[m][k][15][t];
-								} else {
-									if ((near_ID[m]) || (near_ID[m + 1])) {	//cell is adjacent to the body surface
-										D_1=-2*aux_values[m][k][15][t];
-									} else {
-										D_1=aux_values[i_TOT - 2 - m][k][15][t]-aux_values[m][k][15][t];
-									}
-								}
-								if (m != i_TOT - 2) {
-									D_2=aux_values[m + 1][k][15][t]-aux_values[m][k][15][t];
-								}
-								if (k != kMax[0] - 2) {
-									D_3=aux_values[m][k + 1][15][t]-aux_values[m][k][15][t];
-								}
-								if (m != 0) {
-									D_4=aux_values[m - 1][k][15][t]-aux_values[m][k][15][t];
-								}
-								drhoVtz_dx=WLS[0][0]*D_1 + WLS[0][1]*D_2 + WLS[0][2]*D_3 + WLS[0][3]*D_4;
-								break;
+					} else {
+						if (U_FORM==0) {		//Use inertial time derivative of absolute fluid velocity
+							AF_elem[m][k][35][t] = - 0.25*(aux_values_N[m][k][27][t]*nodal_values[m][k][rho_id-1][t]+aux_values_N[m+1][k][27][t]*nodal_values[m+1][k][rho_id-1][t]+
+												aux_values_N[m+1][k+1][27][t]*nodal_values[m+1][k+1][rho_id-1][t]+aux_values_N[m][k+1][27][t]*nodal_values[m][k+1][rho_id-1][t])*
+												cell_values[m][k][numVars + compVarsN][t];
+							AF_elem[m][k][36][t] = - 0.25*(aux_values_N[m][k][28][t]*nodal_values[m][k][rho_id-1][t]+aux_values_N[m+1][k][28][t]*nodal_values[m+1][k][rho_id-1][t]+
+												aux_values_N[m+1][k+1][28][t]*nodal_values[m+1][k+1][rho_id-1][t]+aux_values_N[m][k+1][28][t]*nodal_values[m][k+1][rho_id-1][t])*
+												cell_values[m][k][numVars + compVarsN][t];
+						} else if (U_FORM==1) {		//Use non-inertial time derivative of relative fluid velocity
+							AF_elem[m][k][35][t] = - 0.25*(aux_values_N[m][k][25][t]*nodal_values[m][k][rho_id-1][t]+aux_values_N[m+1][k][25][t]*nodal_values[m+1][k][rho_id-1][t]+
+												aux_values_N[m+1][k+1][25][t]*nodal_values[m+1][k+1][rho_id-1][t]+aux_values_N[m][k+1][25][t]*nodal_values[m][k+1][rho_id-1][t])*
+												cell_values[m][k][numVars + compVarsN][t];
+							AF_elem[m][k][36][t] = - 0.25*(aux_values_N[m][k][26][t]*nodal_values[m][k][rho_id-1][t]+aux_values_N[m+1][k][26][t]*nodal_values[m+1][k][rho_id-1][t]+
+												aux_values_N[m+1][k+1][26][t]*nodal_values[m+1][k+1][rho_id-1][t]+aux_values_N[m][k+1][26][t]*nodal_values[m][k+1][rho_id-1][t])*
+												cell_values[m][k][numVars + compVarsN][t];
+						} else if (U_FORM==2) {
+							//To be implemented...
 						}
-					}
-					//------Unsteady volume integrand
-					if (grad_scheme!=1) {	//Save CPU as these variables will be effectively computed in a following code section
-						AF_elem[m][k][35][t] = cell_values[m][k][numVars + compVarsN + 16][t] * (drhoVtx_dz - drhoVtz_dx) * cell_values[m][k][numVars + compVarsN][t];
-						AF_elem[m][k][36][t] = -cell_values[m][k][numVars + compVarsN + 15][t] * (drhoVtx_dz - drhoVtz_dx) * cell_values[m][k][numVars + compVarsN][t];
-					}
-				} else {
-					if (U_FORM==0) {		//Use inertial time derivative of absolute fluid velocity
-						AF_elem[m][k][35][t] = - 0.25*(aux_values_N[m][k][27][t]*nodal_values[m][k][rho_id-1][t]+aux_values_N[m+1][k][27][t]*nodal_values[m+1][k][rho_id-1][t]+
-											aux_values_N[m+1][k+1][27][t]*nodal_values[m+1][k+1][rho_id-1][t]+aux_values_N[m][k+1][27][t]*nodal_values[m][k+1][rho_id-1][t])*
-											cell_values[m][k][numVars + compVarsN][t];
-						AF_elem[m][k][36][t] = - 0.25*(aux_values_N[m][k][28][t]*nodal_values[m][k][rho_id-1][t]+aux_values_N[m+1][k][28][t]*nodal_values[m+1][k][rho_id-1][t]+
-											aux_values_N[m+1][k+1][28][t]*nodal_values[m+1][k+1][rho_id-1][t]+aux_values_N[m][k+1][28][t]*nodal_values[m][k+1][rho_id-1][t])*
-											cell_values[m][k][numVars + compVarsN][t];
-					} else if (U_FORM==1) {		//Use non-inertial time derivative of relative fluid velocity
-						AF_elem[m][k][35][t] = - 0.25*(aux_values_N[m][k][25][t]*nodal_values[m][k][rho_id-1][t]+aux_values_N[m+1][k][25][t]*nodal_values[m+1][k][rho_id-1][t]+
-											aux_values_N[m+1][k+1][25][t]*nodal_values[m+1][k+1][rho_id-1][t]+aux_values_N[m][k+1][25][t]*nodal_values[m][k+1][rho_id-1][t])*
-											cell_values[m][k][numVars + compVarsN][t];
-						AF_elem[m][k][36][t] = - 0.25*(aux_values_N[m][k][26][t]*nodal_values[m][k][rho_id-1][t]+aux_values_N[m+1][k][26][t]*nodal_values[m+1][k][rho_id-1][t]+
-											aux_values_N[m+1][k+1][26][t]*nodal_values[m+1][k+1][rho_id-1][t]+aux_values_N[m][k+1][26][t]*nodal_values[m][k+1][rho_id-1][t])*
-											cell_values[m][k][numVars + compVarsN][t];
-					} else if (U_FORM==2) {
-						//To be implemented...
 					}
 				}
 				//------Conditionally add turbulent term in the case of LAMB_FORM=1 or LAMB_FORM=2
@@ -6441,7 +6443,7 @@ int main(int argc, char** argv) {
 											cell_values[m][k][numVars + compVarsN][t];
 				//}
 				//---Unsteady volume integrand of apparent force from relative motion term
-				if (U_FORM==1) {
+				if ((U_FORM==1)&&(Lamb_form<2)) {	// Only computed when needed (in particular: for LAMB_FORM < 2)
 					AF_elem[m][k][39][t] = 0.25*(aux_values_N[m][k][27][t]*nodal_values[m][k][rho_id-1][t]+aux_values_N[m+1][k][27][t]*nodal_values[m+1][k][rho_id-1][t]+
 												aux_values_N[m+1][k+1][27][t]*nodal_values[m+1][k+1][rho_id-1][t]+aux_values_N[m][k+1][27][t]*nodal_values[m][k+1][rho_id-1][t])*
 												cell_values[m][k][numVars + compVarsN][t];
@@ -6709,7 +6711,7 @@ int main(int argc, char** argv) {
 
 	//---Compute spatial gradients of (rho*dV/dt) or (rho*dV/dt') at grid nodes.
 	start = chrono::steady_clock::now();
-	if ((grad_scheme==1)&&(!FT_FORM)) {	//Only compute in case they are needed (FT_FORM==false) and the FD gradient scheme is selected (grad_scheme==1)
+	if ((grad_scheme==1)&&(Lamb_form<2)&&(!FT_FORM)) {	//Only compute in case they are needed (FT_FORM==false && LAMB_FORM < 2) and the FD gradient scheme is selected (grad_scheme==1)
 		for (int t=0; t<Nt; t++) {
 			for (int k = 0; k <kMax[0]; k++) {
 				for (int m = 0; m <i_TOT; m++) {
@@ -6991,16 +6993,18 @@ int main(int argc, char** argv) {
 
 	//---Update volume integrand of unsteady term, in case of FD gradient scheme selected
 	start = chrono::steady_clock::now();
-	if ((grad_scheme==1)&&(!FT_FORM)) {
+	if ((grad_scheme==1)) {
 		for (int t=0; t<Nt; t++) {
 			for (int k = 0; k <kMax[0]-1; k++) {
 				for (int m = 0; m <i_TOT-1; m++) {
-					AF_elem[m][k][35][t] = cell_values[m][k][numVars + compVarsN + 16][t] * 0.25 *
-						(nodal_values[m][k][1][t]+nodal_values[m+1][k][1][t]+nodal_values[m+1][k+1][1][t]+nodal_values[m][k+1][1][t]) *
-						cell_values[m][k][numVars + compVarsN][t];
-					AF_elem[m][k][36][t] = -cell_values[m][k][numVars + compVarsN + 15][t] * 0.25 *
-						(nodal_values[m][k][1][t]+nodal_values[m+1][k][1][t]+nodal_values[m+1][k+1][1][t]+nodal_values[m][k+1][1][t]) *
-						cell_values[m][k][numVars + compVarsN][t];
+					if ((Lamb_form<2)&&(!FT_FORM)) {
+						AF_elem[m][k][35][t] = cell_values[m][k][numVars + compVarsN + 16][t] * 0.25 *
+							(nodal_values[m][k][1][t]+nodal_values[m+1][k][1][t]+nodal_values[m+1][k+1][1][t]+nodal_values[m][k+1][1][t]) *
+							cell_values[m][k][numVars + compVarsN][t];
+						AF_elem[m][k][36][t] = -cell_values[m][k][numVars + compVarsN + 15][t] * 0.25 *
+							(nodal_values[m][k][1][t]+nodal_values[m+1][k][1][t]+nodal_values[m+1][k+1][1][t]+nodal_values[m][k+1][1][t]) *
+							cell_values[m][k][numVars + compVarsN][t];
+					}
 					if (Lamb_form > 0) {	//Add turbulent term
 						AF_elem[m][k][35][t] = AF_elem[m][k][35][t] + cell_values[m][k][numVars + compVarsN + 16][t] *
 												(0.25*(aux_values_N[m][k][32][t]+aux_values_N[m+1][k][32][t]+aux_values_N[m+1][k+1][32][t]+aux_values_N[m][k+1][32][t])) *
@@ -7569,14 +7573,19 @@ int main(int argc, char** argv) {
 		} else {
 		printf("%s%7.4f%s\n",           "|TOTAL LIFT COEFFICIENT  (LIU  FORMULATION) :                                  ",AERO[1][t]+AERO[21][t]+AERO[numAF+15][t]+
 																														AERO[numAF+1][t]+
-																														AERO[numAF+9][t]+Clf_nf[t],"    |");
+																														AERO[numAF+9][t]+
+																														AERO[36][t]+
+																														Clf_nf[t],"    |");
 		printf("%s%7.4f%s\n",           "|TOTAL LIFT COEFFICIENT  (MIX. FORMULATION: ORG. F_RHO;  VOL. INTEGR. F_S) :   ",AERO[1][t]+AERO[3][t]+
 																														AERO[16][t]+AERO[19][t]+
 																														AERO[numAF+9][t]+AERO[numAF+11][t]+
-																														AERO[numAF+13][t]+Clf_nf[t],"    |");
+																														AERO[numAF+13][t]+
+																														AERO[36][t]+
+																														Clf_nf[t],"    |");
 		printf("%s%7.4f%s\n",           "|TOTAL LIFT COEFFICIENT  (2014 FORMULATION: ORG. F_RHO; SURF. INTEGR. F_S) :   ",AERO[1][t]+AERO[3][t]+
 																														AERO[numAF+1][t]+																														
 																														AERO[numAF+9][t]+AERO[numAF+11][t]+
+																														AERO[36][t]+
 																														Clf_nf[t],"    |");
 		}
  		printf("%s\n",                  "|-----------------------------------------------------------------------------------------|");
@@ -7771,15 +7780,20 @@ int main(int argc, char** argv) {
 		} else {
 		printf("%s%8.1f%s\n",           "|  TOTAL DRAG COUNTS      (LIU  FORMULATION):                                 ",10000*(AERO[0][t]+AERO[20][t]+
 																														AERO[numAF+14][t]+AERO[numAF][t]+																														
-																														AERO[numAF+8][t]+Cdf_nf[t]),"    |");
+																														AERO[numAF+8][t]+
+																														AERO[35][t]+
+																														Cdf_nf[t]),"    |");
 		printf("%s%8.1f%s\n",           "|  TOTAL DRAG COUNTS      (MIX. FORMULATION: ORG. F_RHO;  VOL. INTEGR. F_S):  ",10000*(AERO[0][t]+AERO[2][t]+AERO[14][t]+
 																														AERO[15][t]+AERO[17][t]+AERO[18][t]+
 																														AERO[33][t]+AERO[34][t]+																														
 																														AERO[numAF+8][t]+AERO[numAF+10][t]+
-																														AERO[numAF+12][t]+Cdf_nf[t]),"    |");
+																														AERO[numAF+12][t]+
+																														AERO[35][t]+
+																														Cdf_nf[t]),"    |");
 		printf("%s%8.1f%s\n",           "|  TOTAL DRAG COUNTS      (2014 FORMULATION: ORG. F_RHO; SURF. INTEGR. F_S):  ",10000*(AERO[0][t]+AERO[2][t]+
 																														AERO[numAF][t]+
 																														AERO[numAF+8][t]+AERO[numAF+10][t]+
+																														AERO[35][t]+
 																														Cdf_nf[t]),"    |");
 		}
 		printf("%s\n",					"|                                                                                         |");
@@ -7856,14 +7870,14 @@ int main(int argc, char** argv) {
 			} else {
 				fprintf (histFile, "%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t",
 					//LIU
-					AERO[1][t]+AERO[21][t]+AERO[numAF+15][t]+AERO[numAF+1][t]+AERO[numAF+9][t]+Clf_nf[t],
-					AERO[0][t]+AERO[20][t]+AERO[numAF+14][t]+AERO[numAF][t]+AERO[numAF+8][t]+Cdf_nf[t],
+					AERO[1][t]+AERO[21][t]+AERO[numAF+15][t]+AERO[numAF+1][t]+AERO[numAF+9][t]+AERO[36][t]+Clf_nf[t],
+					AERO[0][t]+AERO[20][t]+AERO[numAF+14][t]+AERO[numAF][t]+AERO[numAF+8][t]+AERO[35][t]+Cdf_nf[t],
 					//2014
-					AERO[1][t]+AERO[3][t]+AERO[numAF+1][t]+AERO[numAF+9][t]+AERO[numAF+11][t]+Clf_nf[t],
-					AERO[0][t]+AERO[2][t]+AERO[numAF][t]+AERO[numAF+8][t]+AERO[numAF+10][t]+Cdf_nf[t],
+					AERO[1][t]+AERO[3][t]+AERO[numAF+1][t]+AERO[numAF+9][t]+AERO[numAF+11][t]+AERO[36][t]+Clf_nf[t],
+					AERO[0][t]+AERO[2][t]+AERO[numAF][t]+AERO[numAF+8][t]+AERO[numAF+10][t]+AERO[35][t]+Cdf_nf[t],
 					//MIX
-					AERO[1][t]+AERO[3][t]+AERO[16][t]+AERO[19][t]+AERO[numAF+9][t]+AERO[numAF+11][t]+AERO[numAF+13][t]+Clf_nf[t],
-					AERO[0][t]+AERO[2][t]+AERO[14][t]+AERO[15][t]+AERO[17][t]+AERO[18][t]+AERO[33][t]+AERO[34][t]+AERO[numAF+8][t]+AERO[numAF+10][t]+AERO[numAF+12][t]+Cdf_nf[t],
+					AERO[1][t]+AERO[3][t]+AERO[16][t]+AERO[19][t]+AERO[numAF+9][t]+AERO[numAF+11][t]+AERO[numAF+13][t]+AERO[36][t]+Clf_nf[t],
+					AERO[0][t]+AERO[2][t]+AERO[14][t]+AERO[15][t]+AERO[17][t]+AERO[18][t]+AERO[33][t]+AERO[34][t]+AERO[numAF+8][t]+AERO[numAF+10][t]+AERO[numAF+12][t]+AERO[35][t]+Cdf_nf[t],
 					//C
 					NAN,
 					NAN,
