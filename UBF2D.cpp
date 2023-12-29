@@ -72,7 +72,7 @@ void cell_metrics(vector < vector < vector < vector < double > > > > &nodal_valu
 		}
 		else {
 			if ((near_ID[m]) || (near_ID[m + 1])) {	//cell is adjacent to the body surface
-				if ( (!ParForm) && (NS && (!MOV_GRD || ((U_FORM==1)||(U_FORM==2)))) ) {
+				if ( (!ParForm) && (NS && (!MOV_GRD || (U_FORM==1))) ) {
 					a_1 = 0.5;
 				} else {
 					a_1 = sqrt(pow(rx_1 - cell_values[m][k][numVars + compVarsN + 15][t], 2) + pow(rz_1 - cell_values[m][k][numVars + compVarsN + 16][t], 2)) /
@@ -215,7 +215,7 @@ void updateCompCorr(vector < vector < vector < vector < double > > > > &nodal_va
 						(-(a_4 * cell_values[m-1][k][numVars + compVarsN + 10][t] + (1 - a_4) * cell_values[m][k][numVars + compVarsN + 10][t])*dx_4)));
 			} else {
 				if ((near_ID[m]) || (near_ID[m + 1])) {     //cell is adjacent to the body surface
-					if (( NS && (!MOV_GRD || ((U_FORM==1)||(U_FORM==2))))) {	//In this case the cell_metrics function has set a_1=0.5, so 1st cell extrapolation is the option
+					if (( NS && (!MOV_GRD || (U_FORM==1)))) {	//In this case the cell_metrics function has set a_1=0.5, so 1st cell extrapolation is the option
 						curl = (0.5*(nodal_values[m][k][rho_id - 1][t]+nodal_values[m+1][k][rho_id - 1][t])*(
 								(-(a_1 * cell_values[m][k][numVars + compVarsN + 11][t] + (1 - a_1) * cell_values[m][k][numVars + compVarsN + 11][t])*dz_1)+
 								(-(a_1 * cell_values[m][k][numVars + compVarsN + 10][t] + (1 - a_1) * cell_values[m][k][numVars + compVarsN + 10][t])*dx_1))+
@@ -283,7 +283,7 @@ void updateCompCorr(vector < vector < vector < vector < double > > > > &nodal_va
 						(-(a_4 * cell_values[m-1][k][numVars + compVarsN + 8][t] + (1 - a_4) * cell_values[m][k][numVars + compVarsN + 8][t])*dx_4)));
 			} else {
 				if ((near_ID[m]) || (near_ID[m + 1])) {     //cell is adjacent to the body surface
-					if (( NS && (!MOV_GRD || ((U_FORM==1)||(U_FORM==2))))) {	//In this case the cell_metrics function has set a_1=0.5, so 1st cell extrapolation is the option
+					if (( NS && (!MOV_GRD || (U_FORM==1)))) {	//In this case the cell_metrics function has set a_1=0.5, so 1st cell extrapolation is the option
 						curl = (0.5*(nodal_values[m][k][numVars + 1][t]+nodal_values[m+1][k][numVars + 1][t])*(
 								(-(a_1 * cell_values[m][k][numVars + compVarsN + 9][t] + (1 - a_1) * cell_values[m][k][numVars + compVarsN + 9][t])*dz_1)+
 								(-(a_1 * cell_values[m][k][numVars + compVarsN + 8][t] + (1 - a_1) * cell_values[m][k][numVars + compVarsN + 8][t])*dx_1))+
@@ -367,7 +367,7 @@ void updateFirstTerm(vector < vector < vector < vector < double > > > > &nodal_v
 						(-(a_4 * cell_values[m-1][k][numVars + compVarsN + 10][t] + (1 - a_4) * cell_values[m][k][numVars + compVarsN + 10][t])*dx_4)));
 			} else {
 				if ((near_ID[m]) || (near_ID[m + 1])) {     //cell is adjacent to the body surface
-					if (( NS && (!MOV_GRD || ((U_FORM==1)||(U_FORM==2))))) {	//In this case the cell_metrics function has set a_1=0.5, so 1st cell extrapolation is the option
+					if (( NS && (!MOV_GRD || (U_FORM==1)))) {	//In this case the cell_metrics function has set a_1=0.5, so 1st cell extrapolation is the option
 						curl = (0.5*(nodal_values[m][k][rho_id - 1][t]+nodal_values[m+1][k][rho_id - 1][t])*(
 								(-(a_1 * cell_values[m][k][numVars + compVarsN + 11][t] + (1 - a_1) * cell_values[m][k][numVars + compVarsN + 11][t])*dz_1)+
 								(-(a_1 * cell_values[m][k][numVars + compVarsN + 10][t] + (1 - a_1) * cell_values[m][k][numVars + compVarsN + 10][t])*dx_1))+
@@ -435,7 +435,7 @@ void updateFirstTerm(vector < vector < vector < vector < double > > > > &nodal_v
 						(-(a_4 * cell_values[m-1][k][numVars + compVarsN + 8][t] + (1 - a_4) * cell_values[m][k][numVars + compVarsN + 8][t])*dx_4)));
 			} else {
 				if ((near_ID[m]) || (near_ID[m + 1])) {     //cell is adjacent to the body surface
-					if (( NS && (!MOV_GRD || ((U_FORM==1)||(U_FORM==2))))) {	//In this case the cell_metrics function has set a_1=0.5, so 1st cell extrapolation is the option
+					if (( NS && (!MOV_GRD || (U_FORM==1)))) {	//In this case the cell_metrics function has set a_1=0.5, so 1st cell extrapolation is the option
 						curl = (0.5*(nodal_values[m][k][numVars + 1][t]+nodal_values[m+1][k][numVars + 1][t])*(
 								(-(a_1 * cell_values[m][k][numVars + compVarsN + 9][t] + (1 - a_1) * cell_values[m][k][numVars + compVarsN + 9][t])*dz_1)+
 								(-(a_1 * cell_values[m][k][numVars + compVarsN + 8][t] + (1 - a_1) * cell_values[m][k][numVars + compVarsN + 8][t])*dx_1))+
@@ -682,7 +682,7 @@ void updateParasite(vector < vector < vector < vector < double > > > > &nodal_va
 									(a_4 * aux_values[m - 1][k][0][t] + (1 - a_4) * aux_values[m][k][0][t]) * dz_4);
 		} else {
 			if ((near_ID[m]) || (near_ID[m + 1])) {     //cell is adjacent to the body surface
-				if (( NS && (!MOV_GRD || ((U_FORM==1)||(U_FORM==2))))) {
+				if (( NS && (!MOV_GRD || (U_FORM==1)))) {
 					CdeP_vrt_1 = -((-a_1 * aux_values[m][k][0][t] + (1 - a_1) * aux_values[m][k][0][t]) * dz_1 +
 									(a_2 * aux_values[m + 1][k][0][t] + (1 - a_2) * aux_values[m][k][0][t]) * dz_2 +
 									(a_3 * aux_values[m][k + 1][0][t] + (1 - a_3) * aux_values[m][k][0][t]) * dz_3 +
@@ -710,7 +710,7 @@ void updateParasite(vector < vector < vector < vector < double > > > > &nodal_va
 				(rx_4 * dz_4 - rz_4 * dx_4) * (a_4 * aux_values[m - 1][k][1][t] + (1 - a_4) * aux_values[m][k][1][t]));
 		} else {
 			if ((near_ID[m]) || (near_ID[m + 1])) {     //cell is adjacent to the body surface
-				if (( NS && (!MOV_GRD || ((U_FORM==1)||(U_FORM==2))))) {
+				if (( NS && (!MOV_GRD || (U_FORM==1)))) {
 					CdeP_vrt_2 = (
 						(rx_1 * dz_1 - rz_1 * dx_1) * (-a_1 * aux_values[m][k][1][t] + (1 - a_1) * aux_values[m][k][1][t]) +
 						(rx_2 * dz_2 - rz_2 * dx_2) * (a_2 * aux_values[m + 1][k][1][t] + (1 - a_2) * aux_values[m][k][1][t]) +
@@ -788,7 +788,7 @@ void updateParasite(vector < vector < vector < vector < double > > > > &nodal_va
 									(a_4 * aux_values[m - 1][k][0][t] + (1 - a_4) * aux_values[m][k][0][t]) * dx_4);
 		} else {
 			if ((near_ID[m]) || (near_ID[m + 1])) {     //cell is adjacent to the body surface
-				if (( NS && (!MOV_GRD || ((U_FORM==1)||(U_FORM==2))))) {
+				if (( NS && (!MOV_GRD || (U_FORM==1)))) {
 					AF_elem[m][k][16][t] = -(-(-a_1 * aux_values[m][k][0][t] + (1 - a_1) * aux_values[m][k][0][t]) * dx_1 -
 											(a_2 * aux_values[m + 1][k][0][t] + (1 - a_2) * aux_values[m][k][0][t]) * dx_2 -
 											(a_3 * aux_values[m][k + 1][0][t] + (1 - a_3) * aux_values[m][k][0][t]) * dx_3 -
@@ -841,7 +841,7 @@ void updateParasite(vector < vector < vector < vector < double > > > > &nodal_va
 				(rx_4 * dz_4 - rz_4 * dx_4) * (a_4 * aux_values[m - 1][k][2][t] + (1 - a_4) * aux_values[m][k][2][t]));
 		} else {
 			if ((near_ID[m]) || (near_ID[m + 1])) {     //cell is adjacent to the body surface
-				if (( NS && (!MOV_GRD || ((U_FORM==1)||(U_FORM==2))))) {
+				if (( NS && (!MOV_GRD || (U_FORM==1)))) {
 					AF_elem[m][k][19][t] = (
 						(rx_1 * dz_1 - rz_1 * dx_1) * (-a_1 * aux_values[m][k][2][t] + (1 - a_1) * aux_values[m][k][2][t]) +
 						(rx_2 * dz_2 - rz_2 * dx_2) * (a_2 * aux_values[m + 1][k][2][t] + (1 - a_2) * aux_values[m][k][2][t]) +
@@ -1229,7 +1229,7 @@ void updateF_grad_rho(vector < vector < vector < vector < double > > > > &nodal_
 												   (a_4 * aux_values[m - 1][k][9][t] + (1 - a_4) * aux_values[m][k][9][t]) * dz_4);
 		} else {
 			if ((near_ID[m]) || (near_ID[m + 1])) {     //cell is adjacent to the body surface
-				if (( NS && (!MOV_GRD || ((U_FORM==1)||(U_FORM==2))))) {
+				if (( NS && (!MOV_GRD || (U_FORM==1)))) {
 					CdeP_vrt_gradrho = CdeP_vrt_gradrho + ((-a_1 * aux_values[m][k][9][t] + (1 - a_1) * aux_values[m][k][9][t]) * dz_1 +
 														   (a_2 * aux_values[m + 1][k][9][t] + (1 - a_2) * aux_values[m][k][9][t]) * dz_2 +
 														   (a_3 * aux_values[m][k + 1][9][t] + (1 - a_3) * aux_values[m][k][9][t]) * dz_3 +
@@ -1258,7 +1258,7 @@ void updateF_grad_rho(vector < vector < vector < vector < double > > > > &nodal_
 				(rx_4 * dz_4 - rz_4 * dx_4) * (a_4 * aux_values[m - 1][k][10][t] + (1 - a_4) * aux_values[m][k][10][t]));
 		} else {
 			if ((near_ID[m]) || (near_ID[m + 1])) {     //cell is adjacent to the body surface
-				if (( NS && (!MOV_GRD || ((U_FORM==1)||(U_FORM==2))))) {
+				if (( NS && (!MOV_GRD || (U_FORM==1)))) {
 					CdeP_vrt_gradrho = CdeP_vrt_gradrho - (
 						(rx_1 * dz_1 - rz_1 * dx_1) * (-a_1 * aux_values[m][k][10][t] + (1 - a_1) * aux_values[m][k][10][t]) +
 						(rx_2 * dz_2 - rz_2 * dx_2) * (a_2 * aux_values[m + 1][k][10][t] + (1 - a_2) * aux_values[m][k][10][t]) +
@@ -1319,7 +1319,7 @@ void updateF_grad_rho(vector < vector < vector < vector < double > > > > &nodal_
 														(a_4 * aux_values[m - 1][k][9][t] + (1 - a_4) * aux_values[m][k][9][t]) * dx_4);
 		} else {
 			if ((near_ID[m]) || (near_ID[m + 1])) {     //cell is adjacent to the body surface
-				if (( NS && (!MOV_GRD || ((U_FORM==1)||(U_FORM==2))))) {
+				if (( NS && (!MOV_GRD || (U_FORM==1)))) {
 					AF_elem[m][k][25][t] = AF_elem[m][k][25][t] = + (-(-a_1 * aux_values[m][k][9][t] + (1 - a_1) * aux_values[m][k][9][t]) * dx_1 -
 																(a_2 * aux_values[m + 1][k][9][t] + (1 - a_2) * aux_values[m][k][9][t]) * dx_2 -
 																(a_3 * aux_values[m][k + 1][9][t] + (1 - a_3) * aux_values[m][k][9][t]) * dx_3 -
@@ -1348,7 +1348,7 @@ void updateF_grad_rho(vector < vector < vector < vector < double > > > > &nodal_
 				(rx_4 * dz_4 - rz_4 * dx_4) * (a_4 * aux_values[m - 1][k][11][t] + (1 - a_4) * aux_values[m][k][11][t]));
 		} else {
 			if ((near_ID[m]) || (near_ID[m + 1])) {     //cell is adjacent to the body surface
-				if (( NS && (!MOV_GRD || ((U_FORM==1)||(U_FORM==2))))) {
+				if (( NS && (!MOV_GRD || (U_FORM==1)))) {
 					AF_elem[m][k][25][t] = AF_elem[m][k][25][t] - (
 						(rx_1 * dz_1 - rz_1 * dx_1) * (-a_1 * aux_values[m][k][11][t] + (1 - a_1) * aux_values[m][k][11][t]) +
 						(rx_2 * dz_2 - rz_2 * dx_2) * (a_2 * aux_values[m + 1][k][11][t] + (1 - a_2) * aux_values[m][k][11][t]) +
@@ -1388,7 +1388,7 @@ void compute_AF(vector < vector < vector < vector < double > > > > &nodal_values
 				vector < vector < vector < vector < double > > > > &aux_values, vector < vector < vector < vector < double > > > > &aux_values_N,
 				vector < vector < vector < vector < bool > > > > &flags, vector < vector < vector < vector < double > > > > &AF_elem,
 				int t, int mD, int kD, int numVars, int compVarsN, int numAF, int numAF_ADD, int i_TOT, int64_t* kMax, bool NS, bool flux_scheme, int grad_scheme, bool ParForm, bool limit_integr,
-				vector < bool > &near_ID, double rho_inf, double V_inf, double chord, int rho_id, int vx_id, int vz_id, vector < double > &X_POLE, vector < double > &Z_POLE,
+				vector < bool > &near_ID, double rho_inf, double V_inf, double chord, int rho_id, int vx_id, int vz_id, int vgx_id, int vgz_id, vector < double > &X_POLE, vector < double > &Z_POLE,
 				int U_FORM, bool FT_FORM, double x_CoR, double z_CoR, double ampl_x, double freq_x, double t0_x, double ampl_z, double freq_z, double t0_z,
 				double ampl_a, double freq_a, double t0_a, bool MOV_GRD, vector < double > &time,
 				double rx_1, double rz_1, double rx_2, double rz_2, double rx_3, double rz_3, double rx_4, double rz_4,
@@ -2697,7 +2697,7 @@ void compute_AF(vector < vector < vector < vector < double > > > > &nodal_values
 															(dz_4 * ((aux_values_N[m][k][26][t] + aux_values_N[m][k + 1][26][t]) / 2) +
 															dx_4 * ((aux_values_N[m][k][25][t] + aux_values_N[m][k + 1][25][t]) / 2));
 						} else if (U_FORM==2) {		//Use non-inertial time derivative of relative fluid velocity
-							//To be implemented
+							//Formulation not applicable to the mixed inertial/non-inertial approach
 						}
 					}
 					//Apparent force from relative motion term
@@ -2962,7 +2962,7 @@ void compute_AF(vector < vector < vector < vector < double > > > > &nodal_values
 														(dz_2 * ((aux_values_N[m + 1][k + 1][26][t] + aux_values_N[m + 1][k][26][t]) / 2) +
 														dx_2 * ((aux_values_N[m + 1][k + 1][25][t] + aux_values_N[m + 1][k][25][t]) / 2));
 						} else if (U_FORM==2) {		//Use non-inertial time derivative of relative fluid velocity
-							//To be implemented
+							//Formulation not applicable to the mixed inertial/non-inertial approach
 						}
 					}
 					//Apparent force from relative motion term
@@ -3119,7 +3119,7 @@ void compute_AF(vector < vector < vector < vector < double > > > > &nodal_values
 															(dz_3 * ((aux_values_N[m][k + 1][26][t] + aux_values_N[m + 1][k + 1][26][t]) / 2) +
 															dx_3 * ((aux_values_N[m][k + 1][25][t] + aux_values_N[m + 1][k + 1][25][t]) / 2));
 						} else if (U_FORM==2) {		//Use non-inertial time derivative of relative fluid velocity
-							//To be implemented
+							//Formulation not applicable to the mixed inertial/non-inertial approach
 						}
 					}
 					//Apparent force from relative motion term
@@ -3273,7 +3273,7 @@ void compute_AF(vector < vector < vector < vector < double > > > > &nodal_values
 													(dz_4 * ((aux_values_N[m][k][26][t] + aux_values_N[m][k + 1][26][t]) / 2) +
 													dx_4 * ((aux_values_N[m][k][25][t] + aux_values_N[m][k + 1][25][t]) / 2));
 				} else if (U_FORM==2) {		//Use non-inertial time derivative of relative fluid velocity
-					//To be implemented
+					//Formulation not applicable to the mixed inertial/non-inertial approach
 				}
 			}
 			//Apparent force from relative motion term
@@ -3424,7 +3424,7 @@ void compute_AF(vector < vector < vector < vector < double > > > > &nodal_values
 												(dz_2 * ((aux_values_N[m + 1][k + 1][26][t] + aux_values_N[m + 1][k][26][t]) / 2) +
 												dx_2 * ((aux_values_N[m + 1][k + 1][25][t] + aux_values_N[m + 1][k][25][t]) / 2));
 				} else if (U_FORM==2) {		//Use non-inertial time derivative of relative fluid velocity
-					//To be implemented
+					//Formulation not applicable to the mixed inertial/non-inertial approach
 				}
 			}
 			//Apparent force from relative motion term
@@ -3439,17 +3439,28 @@ void compute_AF(vector < vector < vector < vector < double > > > > &nodal_values
 											dx_2 * ((aux_values_N[m + 1][k + 1][27][t] + aux_values_N[m + 1][k][27][t]) / 2));
 			}
 		}
-		//SURFACE integrals over BODY boundary (only computed in case of eff. inviscid flow or moving-grid and inertial formulation)
-		if ( (k==0) && ( ParForm || ((!NS)||(MOV_GRD && (U_FORM==0))) ) ) {
+		//SURFACE integrals over BODY boundary (only computed in case of eff. inviscid flow or moving-grid and inertial or mixed formulation)
+		if ( (k==0) && ( ParForm || ((!NS)||(MOV_GRD && (U_FORM==0))) ) ) {		//The check on V_wall!=0 is done on the working velocity, for U_FORM=0 or U_FORM=1, while for U_FORM=2 it is done for the relative velocity.
 			for (int m = mD; m <i_TOT-1-mD; m++) {
 				if ((near_ID[m]) || (near_ID[m + 1])) {
 					cell_metrics(nodal_values, cell_values, NS, U_FORM, MOV_GRD, t, m, k, numVars, compVarsN, near_ID, i_TOT, &kMax[0], grad_scheme, flux_scheme, ParForm, X_POLE, Z_POLE,
 								rx_1, rz_1, rx_2, rz_2, rx_3, rz_3, rx_4, rz_4, dx_1, dz_1, dx_2, dz_2, dx_3, dz_3, dx_4, dz_4, a_1, a_2, a_3, a_4, WLS);
 					//Vortex force additional term on body surface
-					AERO[numAF+8][t]=AERO[numAF+8][t]-((nodal_values[m][k][rho_id-1][t]+nodal_values[m+1][k][rho_id-1][t])/2)*
-															((nodal_values[m][k][numVars + 1][t] + nodal_values[m+1][k][numVars + 1][t]) / 2)*dz_1;
-					AERO[numAF+9][t]=AERO[numAF+9][t]+((nodal_values[m][k][rho_id-1][t]+nodal_values[m+1][k][rho_id-1][t])/2)*
-															((nodal_values[m][k][numVars + 1][t] + nodal_values[m+1][k][numVars + 1][t]) / 2)*dx_1;
+					if (U_FORM<2) {		//Use the working velocity (absolute for U_FORM=0, relative for U_FORM=1)
+						AERO[numAF+8][t]=AERO[numAF+8][t]-((nodal_values[m][k][rho_id-1][t]+nodal_values[m+1][k][rho_id-1][t])/2)*
+																((nodal_values[m][k][numVars + 1][t] + nodal_values[m+1][k][numVars + 1][t]) / 2)*dz_1;
+						AERO[numAF+9][t]=AERO[numAF+9][t]+((nodal_values[m][k][rho_id-1][t]+nodal_values[m+1][k][rho_id-1][t])/2)*
+																((nodal_values[m][k][numVars + 1][t] + nodal_values[m+1][k][numVars + 1][t]) / 2)*dx_1;
+					} else {			//Use the relative velocity, as this is the velocity that appears in the F_body contribution of the mixed inertial/non-inertial formulation
+						AERO[numAF+8][t]=AERO[numAF+8][t]-((nodal_values[m][k][rho_id-1][t]+nodal_values[m+1][k][rho_id-1][t])/2)*((
+								0.5*(pow(nodal_values[m][k][vx_id-1][t]-nodal_values[m][k][vgx_id-1][t],2)+pow(nodal_values[m][k][vz_id-1][t]-nodal_values[m][k][vgz_id-1][t],2))+
+								0.5*(pow(nodal_values[m+1][k][vx_id-1][t]-nodal_values[m+1][k][vgx_id-1][t],2)+pow(nodal_values[m+1][k][vz_id-1][t]-nodal_values[m+1][k][vgz_id-1][t],2))
+								) / 2)*dz_1;
+						AERO[numAF+9][t]=AERO[numAF+9][t]+((nodal_values[m][k][rho_id-1][t]+nodal_values[m+1][k][rho_id-1][t])/2)*((
+								0.5*(pow(nodal_values[m][k][vx_id-1][t]-nodal_values[m][k][vgx_id-1][t],2)+pow(nodal_values[m][k][vz_id-1][t]-nodal_values[m][k][vgz_id-1][t],2))+
+								0.5*(pow(nodal_values[m+1][k][vx_id-1][t]-nodal_values[m+1][k][vgx_id-1][t],2)+pow(nodal_values[m+1][k][vz_id-1][t]-nodal_values[m+1][k][vgz_id-1][t],2))
+								) / 2)*dx_1;
+					}
 					if (flux_scheme) {
 						//Compressibility correction additional term on body surface
 						AERO[numAF+10][t]=AERO[numAF+10][t]-rz_1 * ((nodal_values[m][k][numVars + 1][t] + nodal_values[m+1][k][numVars + 1][t]) / 2) *
@@ -3536,20 +3547,21 @@ void compute_AF(vector < vector < vector < vector < double > > > > &nodal_values
 																	(dz_1*((aux_values_N[m][k][26][t]+aux_values_N[m+1][k][26][t])/2)+
 																	dx_1*((aux_values_N[m][k][25][t]+aux_values_N[m+1][k][25][t])/2));
 						} else if (U_FORM==2) {		//Use non-inertial time derivative of relative fluid velocity, plus moving reference terms
-							//double r_prime_x = rx_1 - x_CoR+ampl_x * sin(freq_x*(time[t]-t0_x));
-							//double r_prime_z = rz_1 - z_CoR+ampl_z * sin(freq_z*(time[t]-t0_z));
+							double X_prime_x = (nodal_values[m][k][0][t]+nodal_values[m+1][k][0][t])/2 - x_CoR - ampl_x * sin(freq_x*(time[t]-t0_x));
+							double X_prime_z = (nodal_values[m][k][2][t]+nodal_values[m+1][k][2][t])/2 - z_CoR - ampl_z * sin(freq_z*(time[t]-t0_z));
 							double vx=NAN, vz=NAN;
-							//To be corrected!!! rz and rx should be replaced by relative positions (x' vector components)
-							vx = ((aux_values_N[m][k][27][t]+aux_values_N[m+1][k][27][t])/2) - freq_x*freq_x*ampl_x*sin(freq_x*(time[t]-t0_x)) -
-								freq_a*freq_a*ampl_a*sin(freq_a*(time[t]-t0_a))*rz_1 - pow(freq_a*ampl_a*cos(freq_a*(time[t]-t0_a)),2)*rx_1;
-							vz = ((aux_values_N[m][k][28][t]+aux_values_N[m+1][k][28][t])/2) - freq_z*freq_z*ampl_z*sin(freq_z*(time[t]-t0_z)) +
-								freq_a*freq_a*ampl_a*sin(freq_a*(time[t]-t0_a))*rx_1 - pow(freq_a*ampl_a*cos(freq_a*(time[t]-t0_a)),2)*rz_1;
+							vx = (((aux_values_N[m][k][27][t]+aux_values_N[m+1][k][27][t])/2) - freq_x*freq_x*ampl_x*sin(freq_x*(time[t]-t0_x)) -
+								freq_a*freq_a*ampl_a*sin(freq_a*(time[t]-t0_a))*X_prime_z - pow(freq_a*ampl_a*cos(freq_a*(time[t]-t0_a)),2)*X_prime_x)*
+								((nodal_values[m][k][rho_id-1][t]+nodal_values[m+1][k][rho_id-1][t])/2);
+							vz = (((aux_values_N[m][k][28][t]+aux_values_N[m+1][k][28][t])/2) - freq_z*freq_z*ampl_z*sin(freq_z*(time[t]-t0_z)) +
+								freq_a*freq_a*ampl_a*sin(freq_a*(time[t]-t0_a))*X_prime_x - pow(freq_a*ampl_a*cos(freq_a*(time[t]-t0_a)),2)*X_prime_z)*
+								((nodal_values[m][k][rho_id-1][t]+nodal_values[m+1][k][rho_id-1][t])/2);
 							AERO[numAF+32][t]=AERO[numAF+32][t]+rz_1*(dz_1*vz + dx_1*vx);
 							AERO[numAF+33][t]=AERO[numAF+33][t]-rx_1*(dz_1*vz + dx_1*vx);
 						}
 					}
 					//Unsteady body surface term (Formulation C)
-					if (MOV_GRD && (U_FORM==0)) {	//Not computed in cases it should be exactely zero (to avoid inaccuracies due to non-zero relative velocity at trailing edge points)
+					if (MOV_GRD && (U_FORM!=1)) {	//Not computed in cases it should be exactely zero (to avoid inaccuracies due to non-zero relative velocity at trailing edge points)
 						AERO[numAF+34][t]=AERO[numAF+34][t]-((nodal_values[m][k][rho_id-1][t]*nodal_values[m][k][vx_id-1][t]+
 																	nodal_values[m+1][k][rho_id-1][t]*nodal_values[m+1][k][vx_id-1][t])/2)*
 																	(((nodal_values[m][k][vx_id-1][t]+nodal_values[m+1][k][vx_id-1][t])/2)*dz_1+
@@ -3646,7 +3658,7 @@ int main(int argc, char** argv) {
 	bool rescaled=0;
 	//Unsteady variables
 	bool MOV_GRD=0;		//This flag is necessary to distinguish whether the absolute velocity includes grid velocities or just represents the fluid velocity.
-	int U_FORM=0;		// when (U_FORM==0) the absolute velocity is used; when (U_FORM==1 || U_FORM==2) the relative velocity is used;
+	int U_FORM=0;		// when (U_FORM==0 || U_FORM==2) the absolute velocity is used; when (U_FORM==1) the relative velocity is used;
 	bool FT_FORM=0;
 	double x_CoR=0;		double z_CoR=0;
 	double ampl_x=0;	double freq_x=0;	double t0_x=0;
@@ -3878,6 +3890,19 @@ int main(int argc, char** argv) {
 		}
 		case_file.close();
 	}
+	//Some checks on the input data
+	if ((U_FORM==2)&&(!INC)) {
+		cout << "Mixed inertial/non-inertial formulation (U_FORM=2) only available for incompressible flows (INC=1).\n";
+		return 0;
+	}
+	if ((FT_FORM)&&(U_FORM==2)) {
+		cout << "Alternative espression for unsteady terms (FT_FORM) not available for the mixed inertial/non-inertial formulation (U_FORM=2).\n";
+		return 0;
+	}
+	if ((Lamb_form>0)&&(U_FORM==2)) {
+		cout << "Lamb vector calculation based on Crocco's equation (LAMB_FORM>0) not available for the mixed inertial/non-inertial formulation (U_FORM=2).\n";
+		return 0;
+	}
 	Nt=floor((Nt-1)/every)+1;
 	p_inf= rho_inf * R_air * T_inf;
 	M_inf = V_inf / (sqrt(gamma_air * R_air * T_inf));
@@ -4068,7 +4093,7 @@ int main(int argc, char** argv) {
 	}
 
 	//---Conditionally replace absolute with relative velocities as working variables
-	if ((U_FORM==1)||(U_FORM==2)) {
+	if (U_FORM==1) {
 		for (int t=0; t<Nt; t++) {
 			for (int k = 0; k < kMax[0]; k++) {
 				for (int m = 0; m < i_TOT; m++) {
@@ -4469,16 +4494,18 @@ int main(int argc, char** argv) {
 								(-(nodal_values[m][k+1][numVars][t]+nodal_values[m+1][k+1][numVars][t])/2)*dx_3+
 								(-(nodal_values[m][k][numVars][t]+nodal_values[m][k+1][numVars][t])/2)*dx_4);
 						//---Density
-						cell_values[m][k][numVars+compVarsN+8][t]=(1/cell_values[m][k][numVars+compVarsN][t])*
-							(((nodal_values[m+1][k][rho_id-1][t]+nodal_values[m][k][rho_id-1][t])/2)*dz_1+
-								((nodal_values[m+1][k+1][rho_id-1][t]+nodal_values[m+1][k][rho_id-1][t])/2)*dz_2+
-								((nodal_values[m][k+1][rho_id-1][t]+nodal_values[m+1][k+1][rho_id-1][t])/2)*dz_3+
-								((nodal_values[m][k][rho_id-1][t]+nodal_values[m][k+1][rho_id-1][t])/2)*dz_4);
-						cell_values[m][k][numVars+compVarsN+9][t]=(1/cell_values[m][k][numVars+compVarsN][t])*
-							((-(nodal_values[m+1][k][rho_id-1][t]+nodal_values[m][k][rho_id-1][t])/2)*dx_1+
-								(-(nodal_values[m+1][k+1][rho_id-1][t]+nodal_values[m+1][k][rho_id-1][t])/2)*dx_2+
-								(-(nodal_values[m][k+1][rho_id-1][t]+nodal_values[m+1][k+1][rho_id-1][t])/2)*dx_3+
-								(-(nodal_values[m][k][rho_id-1][t]+nodal_values[m][k+1][rho_id-1][t])/2)*dx_4);
+						if (!INC) {		//Otherwise just retain the zero initialization values
+							cell_values[m][k][numVars+compVarsN+8][t]=(1/cell_values[m][k][numVars+compVarsN][t])*
+								(((nodal_values[m+1][k][rho_id-1][t]+nodal_values[m][k][rho_id-1][t])/2)*dz_1+
+									((nodal_values[m+1][k+1][rho_id-1][t]+nodal_values[m+1][k][rho_id-1][t])/2)*dz_2+
+									((nodal_values[m][k+1][rho_id-1][t]+nodal_values[m+1][k+1][rho_id-1][t])/2)*dz_3+
+									((nodal_values[m][k][rho_id-1][t]+nodal_values[m][k+1][rho_id-1][t])/2)*dz_4);
+							cell_values[m][k][numVars+compVarsN+9][t]=(1/cell_values[m][k][numVars+compVarsN][t])*
+								((-(nodal_values[m+1][k][rho_id-1][t]+nodal_values[m][k][rho_id-1][t])/2)*dx_1+
+									(-(nodal_values[m+1][k+1][rho_id-1][t]+nodal_values[m+1][k][rho_id-1][t])/2)*dx_2+
+									(-(nodal_values[m][k+1][rho_id-1][t]+nodal_values[m+1][k+1][rho_id-1][t])/2)*dx_3+
+									(-(nodal_values[m][k][rho_id-1][t]+nodal_values[m][k+1][rho_id-1][t])/2)*dx_4);
+						}
 						//---Kinetic energy per unit mass
 						cell_values[m][k][numVars+compVarsN+10][t]=(1/cell_values[m][k][numVars+compVarsN][t])*
 							(((nodal_values[m+1][k][numVars+1][t]+nodal_values[m][k][numVars+1][t])/2)*dz_1+
@@ -4585,6 +4612,7 @@ int main(int argc, char** argv) {
 						cell_values[m][k][numVars+compVarsN+6][t]=WLS[0][0]*D_1 + WLS[0][1]*D_2 + WLS[0][2]*D_3 + WLS[0][3]*D_4;
 						cell_values[m][k][numVars+compVarsN+7][t]=WLS[1][0]*D_1 + WLS[1][1]*D_2 + WLS[1][2]*D_3 + WLS[1][3]*D_4;
 						//---Density
+						if (!INC) {		//Otherwise just retain the zero initialization values
 							D_1=0; D_2=0; D_3=0; D_4=0;	//Re-initialization
 							if (k != 0) {
 								D_1=cell_values[m][k - 1][rho_id-1][t]-cell_values[m][k][rho_id-1][t];
@@ -4604,8 +4632,9 @@ int main(int argc, char** argv) {
 							if (m != 0) {
 								D_4=cell_values[m - 1][k][rho_id-1][t]-cell_values[m][k][rho_id-1][t];
 							}
-						cell_values[m][k][numVars+compVarsN+8][t]=WLS[0][0]*D_1 + WLS[0][1]*D_2 + WLS[0][2]*D_3 + WLS[0][3]*D_4;
-						cell_values[m][k][numVars+compVarsN+9][t]=WLS[1][0]*D_1 + WLS[1][1]*D_2 + WLS[1][2]*D_3 + WLS[1][3]*D_4;
+							cell_values[m][k][numVars+compVarsN+8][t]=WLS[0][0]*D_1 + WLS[0][1]*D_2 + WLS[0][2]*D_3 + WLS[0][3]*D_4;
+							cell_values[m][k][numVars+compVarsN+9][t]=WLS[1][0]*D_1 + WLS[1][1]*D_2 + WLS[1][2]*D_3 + WLS[1][3]*D_4;
+						}
 						//---Kinetic energy per unit mass
 							D_1=0; D_2=0; D_3=0; D_4=0;	//Re-initialization
 							if (k != 0) {
@@ -4656,8 +4685,13 @@ int main(int argc, char** argv) {
 					//Vorticity
 					cell_values[m][k][numVars+compVarsN+12][t]=-cell_values[m][k][numVars+compVarsN+4][t]+cell_values[m][k][numVars+compVarsN+3][t];
 					//Lamb vector (re-defined in the case of RANS fields)
-					cell_values[m][k][numVars+compVarsN+13][t]=cell_values[m][k][vz_id-1][t]*cell_values[m][k][numVars+compVarsN+12][t];
-					cell_values[m][k][numVars+compVarsN+14][t]=-cell_values[m][k][vx_id-1][t]*cell_values[m][k][numVars+compVarsN+12][t];
+					if (U_FORM<2) {		//Use the working vorticity and velocity
+						cell_values[m][k][numVars+compVarsN+13][t]=cell_values[m][k][vz_id-1][t]*cell_values[m][k][numVars+compVarsN+12][t];
+						cell_values[m][k][numVars+compVarsN+14][t]=-cell_values[m][k][vx_id-1][t]*cell_values[m][k][numVars+compVarsN+12][t];
+					} else {			//Use the working (absolute) vorticity and the computed relative velocity
+						cell_values[m][k][numVars+compVarsN+13][t]=(cell_values[m][k][vz_id-1][t]-cell_values[m][k][vgz_id-1][t])*cell_values[m][k][numVars+compVarsN+12][t];
+						cell_values[m][k][numVars+compVarsN+14][t]=-(cell_values[m][k][vx_id-1][t]-cell_values[m][k][vgx_id-1][t])*cell_values[m][k][numVars+compVarsN+12][t];
+					}
 				}
 			}
 		}
@@ -4874,7 +4908,7 @@ int main(int argc, char** argv) {
 														(inv_d1 + inv_d2 + inv_d3 + inv_d4);
 					}
 				}
-				//COMPUTE gradients of mass density, fluid velocity, 0.5*V^2 and turb. kin. en. (to be implemented), together with Lamb vector, at grid nodes in the case of FD gradient scheme selection
+				//COMPUTE gradients of mass density, fluid velocity, 0.5*V^2 and turb. kin. en., together with Lamb vector, at grid nodes in the case of FD gradient scheme selection
 				if (grad_scheme==1) {
 					//Local Jacobian
 					double J11=0, J12=0, J21=0, J22=0, ddm=0, ddk=0;
@@ -4899,24 +4933,26 @@ int main(int argc, char** argv) {
 						J22=0.5*nodal_values[m][k+1][2][t]-0.5*nodal_values[m][k-1][2][t];
 					}
                     double detJ=J11*J22-J12*J21;
-					//Mass density index gradients
-					if (m==0) {
-						ddm=-1.5*nodal_values[m][k][rho_id-1][t]+2.0*nodal_values[m+1][k][rho_id-1][t]-0.5*nodal_values[m+2][k][rho_id-1][t];
-					} else if (m==i_TOT-1) {
-						ddm=0.5*nodal_values[m-2][k][rho_id-1][t]-2.0*nodal_values[m-1][k][rho_id-1][t]+1.5*nodal_values[m][k][rho_id-1][t];
-					} else {
-						ddm=0.5*nodal_values[m+1][k][rho_id-1][t]-0.5*nodal_values[m-1][k][rho_id-1][t];
+					if (!INC) {		//Otherwise just retain the zero initialization values
+						//Mass density index gradients
+						if (m==0) {
+							ddm=-1.5*nodal_values[m][k][rho_id-1][t]+2.0*nodal_values[m+1][k][rho_id-1][t]-0.5*nodal_values[m+2][k][rho_id-1][t];
+						} else if (m==i_TOT-1) {
+							ddm=0.5*nodal_values[m-2][k][rho_id-1][t]-2.0*nodal_values[m-1][k][rho_id-1][t]+1.5*nodal_values[m][k][rho_id-1][t];
+						} else {
+							ddm=0.5*nodal_values[m+1][k][rho_id-1][t]-0.5*nodal_values[m-1][k][rho_id-1][t];
+						}
+						if (k==0) {
+							ddk=-1.5*nodal_values[m][k][rho_id-1][t]+2.0*nodal_values[m][k+1][rho_id-1][t]-0.5*nodal_values[m][k+2][rho_id-1][t];
+						} else if (k==kMax[0]-1) {
+							ddk=0.5*nodal_values[m][k-2][rho_id-1][t]-2.0*nodal_values[m][k-1][rho_id-1][t]+1.5*nodal_values[m][k][rho_id-1][t];
+						} else {
+							ddk=0.5*nodal_values[m][k+1][rho_id-1][t]-0.5*nodal_values[m][k-1][rho_id-1][t];
+						}
+						//Mass density spatial gradients
+						aux_values_N[m][k][17][t] = (J22*ddm - J12*ddk) / detJ;
+						aux_values_N[m][k][18][t] = (-J21*ddm + J11*ddk) / detJ;
 					}
-					if (k==0) {
-						ddk=-1.5*nodal_values[m][k][rho_id-1][t]+2.0*nodal_values[m][k+1][rho_id-1][t]-0.5*nodal_values[m][k+2][rho_id-1][t];
-					} else if (k==kMax[0]-1) {
-						ddk=0.5*nodal_values[m][k-2][rho_id-1][t]-2.0*nodal_values[m][k-1][rho_id-1][t]+1.5*nodal_values[m][k][rho_id-1][t];
-					} else {
-						ddk=0.5*nodal_values[m][k+1][rho_id-1][t]-0.5*nodal_values[m][k-1][rho_id-1][t];
-					}
-					//Mass density spatial gradients
-					aux_values_N[m][k][17][t] = (J22*ddm - J12*ddk) / detJ;
-					aux_values_N[m][k][18][t] = (-J21*ddm + J11*ddk) / detJ;
 					//Fluid velocity (x-component) index gradients
 					if (m==0) {
 						ddm=-1.5*nodal_values[m][k][vx_id-1][t]+2.0*nodal_values[m+1][k][vx_id-1][t]-0.5*nodal_values[m+2][k][vx_id-1][t];
@@ -4994,8 +5030,13 @@ int main(int argc, char** argv) {
 					aux_values_N[m][k][30][t] = (J22*ddm - J12*ddk) / detJ;
 					aux_values_N[m][k][31][t] = (-J21*ddm + J11*ddk) / detJ;
 					//Lamb vector
-					aux_values_N[m][k][19][t] =   (aux_values_N[m][k][22][t] - aux_values_N[m][k][23][t]) * nodal_values[m][k][vz_id-1][t];
-					aux_values_N[m][k][20][t] = - (aux_values_N[m][k][22][t] - aux_values_N[m][k][23][t]) * nodal_values[m][k][vx_id-1][t];
+					if (U_FORM<2) {		//Use the working velocity and velocity gradient
+						aux_values_N[m][k][19][t] =   (aux_values_N[m][k][22][t] - aux_values_N[m][k][23][t]) * nodal_values[m][k][vz_id-1][t];
+						aux_values_N[m][k][20][t] = - (aux_values_N[m][k][22][t] - aux_values_N[m][k][23][t]) * nodal_values[m][k][vx_id-1][t];
+					} else {			//Use the computed relative velocity and the working (abolute) velocity gradient
+						aux_values_N[m][k][19][t] =   (aux_values_N[m][k][22][t] - aux_values_N[m][k][23][t]) * (nodal_values[m][k][vz_id-1][t]-nodal_values[m][k][vgz_id-1][t]);
+						aux_values_N[m][k][20][t] = - (aux_values_N[m][k][22][t] - aux_values_N[m][k][23][t]) * (nodal_values[m][k][vx_id-1][t]-nodal_values[m][k][vgx_id-1][t]);
+					}
 				}
 			}
 		}
@@ -5317,7 +5358,7 @@ int main(int argc, char** argv) {
 				aux_values_N[m][k][16][t]=nodal_values[m][k][numVars+1][t]*aux_values_N[m][k][18][t];
 				//COMPUTE time derivatives of fluid velocity and mass density
 				if (Nt>=3) {
-					//---Non-inertial time derivatives of absolute (U_FORM=0) or relative (U_FORM=1) fluid velocity
+					//---Non-inertial time derivatives of absolute (U_FORM=0 or U_FORM=2) or relative (U_FORM=1) fluid velocity
 					if (t==0) {				//2nd order forward time derivative (uniform time steps)
 						aux_values_N[m][k][25][t] = -1.5*nodal_values[m][k][vx_id - 1][t] + 2*nodal_values[m][k][vx_id - 1][t+1] - 0.5*nodal_values[m][k][vx_id - 1][t+2];
 						aux_values_N[m][k][26][t] = -1.5*nodal_values[m][k][vz_id - 1][t] + 2*nodal_values[m][k][vz_id - 1][t+1] - 0.5*nodal_values[m][k][vz_id - 1][t+2];
@@ -5346,7 +5387,7 @@ int main(int argc, char** argv) {
 													freq_a*freq_a*ampl_a*sin(freq_a*(time[t]-t0_a)) * (nodal_values[m][k][0][t]-(x_CoR + ampl_x*sin(freq_x*(time[t]-t0_x)))) +
 													freq_a*freq_a*ampl_a*ampl_a*cos(freq_a*(time[t]-t0_a))*cos(freq_a*(time[t]-t0_a)) * (nodal_values[m][k][2][t]-(z_CoR + ampl_z*sin(freq_z*(time[t]-t0_z)))) +
 													2*freq_a*ampl_a*cos(freq_a*(time[t]-t0_a)) * nodal_values[m][k][vx_id-1][t];
-					} else if (U_FORM==2) {		//Non-inertial time derivatives of relative fluid velocity
+					} else if (U_FORM==2) {		//Non-inertial time derivatives of the relative fluid velocity (to be used in the F_body contribution, for U_FORM=2)
 						if (t==0) {				//2nd order forward time derivative (uniform time steps)
 							aux_values_N[m][k][27][t] = -1.5*(nodal_values[m][k][vx_id - 1][t]-nodal_values[m][k][vgx_id - 1][t])+
 																2*(nodal_values[m][k][vx_id - 1][t+1]-nodal_values[m][k][vgx_id - 1][t+1]) -
@@ -5371,17 +5412,19 @@ int main(int argc, char** argv) {
 						aux_values_N[m][k][28][t]=aux_values_N[m][k][28][t]/(time[1]-time[0]);
 					}
 					//---Non-inertial time derivatives of mass density
-					if (t==0) {				//2nd order forward time derivative (uniform time steps)
-						aux_values_N[m][k][29][t] = -1.5*nodal_values[m][k][rho_id - 1][t] + 2*nodal_values[m][k][rho_id - 1][t+1] - 0.5*nodal_values[m][k][rho_id - 1][t+2];
-					} else if (t==Nt-1) {	//2nd order backward time derivative (uniform time steps)
-						aux_values_N[m][k][29][t] = 0.5*nodal_values[m][k][rho_id - 1][t-2] - 2*nodal_values[m][k][rho_id - 1][t-1] + 1.5*nodal_values[m][k][rho_id - 1][t];
-					} else {				//2nd order central time derivative (uniform time steps)
-						aux_values_N[m][k][29][t] = - 0.5*nodal_values[m][k][rho_id - 1][t-1] + 0.5*nodal_values[m][k][rho_id - 1][t+1];
-					}
-					aux_values_N[m][k][29][t]=aux_values_N[m][k][29][t]/(time[1]-time[0]);
-					if (U_FORM==0) {	//Convert to inertial time derivatives of mass density
-						aux_values_N[m][k][29][t]=aux_values_N[m][k][29][t]-
-												(nodal_values[m][k][vgx_id-1][t]*aux_values_N[m][k][17][t]+nodal_values[m][k][vgz_id-1][t]*aux_values_N[m][k][18][t]);
+					if (!INC) {		//Otherwise just retain the zero initialization values
+						if (t==0) {				//2nd order forward time derivative (uniform time steps)
+							aux_values_N[m][k][29][t] = -1.5*nodal_values[m][k][rho_id - 1][t] + 2*nodal_values[m][k][rho_id - 1][t+1] - 0.5*nodal_values[m][k][rho_id - 1][t+2];
+						} else if (t==Nt-1) {	//2nd order backward time derivative (uniform time steps)
+							aux_values_N[m][k][29][t] = 0.5*nodal_values[m][k][rho_id - 1][t-2] - 2*nodal_values[m][k][rho_id - 1][t-1] + 1.5*nodal_values[m][k][rho_id - 1][t];
+						} else {				//2nd order central time derivative (uniform time steps)
+							aux_values_N[m][k][29][t] = - 0.5*nodal_values[m][k][rho_id - 1][t-1] + 0.5*nodal_values[m][k][rho_id - 1][t+1];
+						}
+						aux_values_N[m][k][29][t]=aux_values_N[m][k][29][t]/(time[1]-time[0]);
+						if (U_FORM!=1) {	//Convert to inertial time derivatives of mass density
+							aux_values_N[m][k][29][t]=aux_values_N[m][k][29][t]-
+													(nodal_values[m][k][vgx_id-1][t]*aux_values_N[m][k][17][t]+nodal_values[m][k][vgz_id-1][t]*aux_values_N[m][k][18][t]);
+						}
 					}
 				}
 			}
@@ -5435,7 +5478,7 @@ int main(int argc, char** argv) {
 										dz_4 * (a_4 * aux_values[m - 1][k][3][t] + (1 - a_4) * aux_values[m][k][3][t]) - dx_4 * (a_4 * aux_values[m - 1][k][4][t] + (1 - a_4) * aux_values[m][k][4][t]));
 								} else {
 									if ((near_ID[m]) || (near_ID[m + 1])) {     //cell is adjacent to the body surface
-										if (!MOV_GRD || ((U_FORM==1)||(U_FORM==2))) {	//In this case the cell_metrics function has set a_1=0.5, so 1st cell extrapolation is the option
+										if (!MOV_GRD || (U_FORM==1)) {	//In this case the cell_metrics function has set a_1=0.5, so 1st cell extrapolation is the option
 											aux_values[m][k][7][t] = (1/cell_values[m][k][numVars+compVarsN][t])*(
 												dz_1 * (a_1 * aux_values[m][k][3][t] + (1 - a_1) * aux_values[m][k][3][t]) - dx_1  * (a_1 * aux_values[m][k][4][t] + (1 - a_1) * aux_values[m][k][4][t]) +
 												dz_2 * (a_2 * aux_values[m + 1][k][3][t] + (1 - a_2) * aux_values[m][k][3][t]) - dx_2 * (a_2 * aux_values[m + 1][k][4][t] + (1 - a_2) * aux_values[m][k][4][t]) +
@@ -5466,7 +5509,7 @@ int main(int argc, char** argv) {
 										dz_4 * (a_4 * aux_values[m - 1][k][4][t] + (1 - a_4) * aux_values[m][k][4][t]) - dx_4 * (a_4 * aux_values[m - 1][k][6][t] + (1 - a_4) * aux_values[m][k][6][t]));
 								} else {
 									if ((near_ID[m]) || (near_ID[m + 1])) {     //cell is adjacent to the body surface	
-										if (!MOV_GRD || ((U_FORM==1)||(U_FORM==2))) {	//In this case the cell_metrics function has set a_1=0.5, so 1st cell extrapolation is the option					
+										if (!MOV_GRD || (U_FORM==1)) {	//In this case the cell_metrics function has set a_1=0.5, so 1st cell extrapolation is the option					
 											aux_values[m][k][8][t] = (1/cell_values[m][k][numVars+compVarsN][t])*(
 												dz_1 * (a_1 * aux_values[m][k][4][t] + (1 - a_1) * aux_values[m][k][4][t]) - dx_1  * (a_1 * aux_values[m][k][6][t] + (1 - a_1) * aux_values[m][k][6][t]) +
 												dz_2 * (a_2 * aux_values[m + 1][k][4][t] + (1 - a_2) * aux_values[m][k][4][t]) - dx_2 * (a_2 * aux_values[m + 1][k][6][t] + (1 - a_2) * aux_values[m][k][6][t]) +
@@ -5836,7 +5879,7 @@ int main(int argc, char** argv) {
 								0.25*(aux_values_N[m][k][26][t]+aux_values_N[m+1][k][26][t]+aux_values_N[m+1][k+1][26][t]+aux_values_N[m][k+1][26][t]) +
 								0.25*(aux_values_N[m][k][28][t]+aux_values_N[m+1][k][28][t]+aux_values_N[m+1][k+1][28][t]+aux_values_N[m][k+1][28][t]);
 						} else if (U_FORM==2) {
-							
+							//Formulation not defined for the mixed inertial/non-inertial approach
 						}
 						//Transverse vorticity by cross-product inverse
 						cell_values[m][k][numVars+compVarsN+12][t]=(-cell_values[m][k][vx_id-1][t]*cell_values[m][k][numVars+compVarsN+14][t]+
@@ -5946,7 +5989,7 @@ int main(int argc, char** argv) {
 								0.25*(aux_values_N[m][k][26][t]+aux_values_N[m+1][k][26][t]+aux_values_N[m+1][k+1][26][t]+aux_values_N[m][k+1][26][t]) +
 								0.25*(aux_values_N[m][k][28][t]+aux_values_N[m+1][k][28][t]+aux_values_N[m+1][k+1][28][t]+aux_values_N[m][k+1][28][t]);
 						} else if (U_FORM==2) {
-							
+							//Formulation not defined for the mixed inertial/non-inertial approach
 						}
 						//Transverse vorticity by cross-product inverse
 						cell_values[m][k][numVars+compVarsN+12][t]=(-cell_values[m][k][vx_id-1][t]*cell_values[m][k][numVars+compVarsN+14][t]+
@@ -6030,7 +6073,7 @@ int main(int argc, char** argv) {
 								0.25*(aux_values_N[m][k][26][t]+aux_values_N[m+1][k][26][t]+aux_values_N[m+1][k+1][26][t]+aux_values_N[m][k+1][26][t]) +
 								0.25*(aux_values_N[m][k][28][t]+aux_values_N[m+1][k][28][t]+aux_values_N[m+1][k+1][28][t]+aux_values_N[m][k+1][28][t]);
 						} else if (U_FORM==2) {
-							
+							//Formulation not defined for the mixed inertial/non-inertial approach
 						}
 						//Transverse vorticity by cross-product inverse
 						cell_values[m][k][numVars+compVarsN+12][t]=(-cell_values[m][k][vx_id-1][t]*cell_values[m][k][numVars+compVarsN+14][t]+
@@ -6358,7 +6401,7 @@ int main(int argc, char** argv) {
 												aux_values_N[m+1][k+1][26][t]*nodal_values[m+1][k+1][rho_id-1][t]+aux_values_N[m][k+1][26][t]*nodal_values[m][k+1][rho_id-1][t])*
 												cell_values[m][k][numVars + compVarsN][t];
 						} else if (U_FORM==2) {
-							//To be implemented...
+							//Formulation not applicable to the mixed inertial/non-inertial approach
 						}
 					}
 				}
@@ -7299,7 +7342,7 @@ int main(int argc, char** argv) {
 		start = chrono::steady_clock::now();
 		for (int t=0; t<Nt; t++) {
 			compute_AF(nodal_values, cell_values, aux_values, aux_values_N, flags, AF_elem, t, int(m_SEL), int(k_SEL), numVars, compVarsN, numAF, numAF_ADD, i_TOT, &kMax[0], NS, flux_scheme,
-					grad_scheme, ParForm, limit_integr, near_ID, rho_inf, V_inf, chord, rho_id, vx_id, vz_id, X_POLE, Z_POLE, U_FORM, FT_FORM, x_CoR, z_CoR, ampl_x, freq_x, t0_x, ampl_z, freq_z, t0_z,
+					grad_scheme, ParForm, limit_integr, near_ID, rho_inf, V_inf, chord, rho_id, vx_id, vz_id, vgx_id, vgz_id, X_POLE, Z_POLE, U_FORM, FT_FORM, x_CoR, z_CoR, ampl_x, freq_x, t0_x, ampl_z, freq_z, t0_z,
 					ampl_a, freq_a, t0_a, MOV_GRD, time, rx_1, rz_1, rx_2, rz_2, rx_3, rz_3, rx_4, rz_4, dx_1, dz_1, dx_2, dz_2, dx_3, dz_3, dx_4, dz_4, a_1, a_2, a_3, a_4, WLS, AERO);
 		}
 		if (debug_mode) {
@@ -7341,7 +7384,7 @@ int main(int argc, char** argv) {
 					}
 					if (mD<floor((i_TOT-1)/2)+1) {
 						compute_AF(nodal_values, cell_values, aux_values, aux_values_N, flags, AF_elem, t, mD, kD, numVars, compVarsN, numAF, numAF_ADD, i_TOT, &kMax[0], NS,
-									flux_scheme, grad_scheme, ParForm, limit_integr, near_ID, rho_inf, V_inf, chord, rho_id, vx_id, vz_id, X_POLE, Z_POLE, U_FORM, FT_FORM, x_CoR, z_CoR,
+									flux_scheme, grad_scheme, ParForm, limit_integr, near_ID, rho_inf, V_inf, chord, rho_id, vx_id, vz_id, vgx_id, vgz_id, X_POLE, Z_POLE, U_FORM, FT_FORM, x_CoR, z_CoR,
 									ampl_x, freq_x, t0_x, ampl_z, freq_z, t0_z, ampl_a, freq_a, t0_a, MOV_GRD, time, rx_1, rz_1, rx_2, rz_2, rx_3, rz_3, rx_4, rz_4,
 									dx_1, dz_1, dx_2, dz_2, dx_3, dz_3, dx_4, dz_4, a_1, a_2, a_3, a_4, WLS, AF[mD][kD]);
 					}
