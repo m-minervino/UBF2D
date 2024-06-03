@@ -5304,7 +5304,7 @@ int main(int argc, char** argv) {
 					//---Non-dimensional entropy variation (w.r.t. freestream)
 					aux_values_N[m][k][3][t] = log((rho_inf / nodal_values[m][k][rho_id - 1][t]) * pow(nodal_values[m][k][T_id - 1][t] / T_inf, 1 / (gamma_air - 1)));
 					//---Non-dimensional total enthalpy variation (w.r.t. freestream)
-					if ((INC)&&(!RHO_VAR)) {
+					if ((INC) && (!RHO_VAR)) {
 						aux_values_N[m][k][4][t] = (((1 * R_air / (gamma_air - 1)) * nodal_values[m][k][T_id - 1][t] + nodal_values[m][k][numVars][t]/rho_inf + (pow(nodal_values[m][k][vx_id - 1][t], 2) + pow(nodal_values[m][k][vz_id - 1][t], 2)) / 2) -
 							((gamma_air * R_air / (gamma_air - 1)) * T_inf + pow(V_inf, 2) / 2)) / pow(V_inf, 2);
 					} else {
