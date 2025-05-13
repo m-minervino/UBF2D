@@ -1,6 +1,6 @@
 # **UBF2D**: a pilot research code for the aerodynamic force analysis
 
-The following description is not intended as a code reference guide or detailed documentation manual. Instead, it offers an overview on the main features of the software and briefly describes the numerical receipts used in the implementation.
+The following description is not intended as a code reference guide or detailed documentation manual. Instead, it offers an overview on the main features of the software and briefly describes the numerical receipts used in the implementation. For additional details and information, please check the [wiki](https://github.com/m-minervino/UBF2D/wiki) section.
 
 **Unsteady Break-Force 2D** (**UBF2D**) is a pilot two-dimensional code developed by the <ins>*Italian Aerospace Research Centre*</ins> (*C.I.R.A.* SCpA) and the <ins>*University of Naples Federico II*</ins>, for the analysis and decomposition of the aerodynamic force on clean aerofoils.
 It is written in *C++* (roughly 8300 code lines) and uses the public-domain [*TecIO* library](https://tecplot.com/products/tecio-library/) to manage input and output of structured datasets[^1].
