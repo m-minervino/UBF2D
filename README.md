@@ -2,7 +2,7 @@
 
 The following description is not intended as a code reference guide or detailed documentation manual. Instead, it offers an overview on the main features of the software and briefly describes the numerical receipts used in the implementation.
 
-**Unsteady Break-Force 2D** (**UBF2D**) is a pilot two-dimensional code developed by the <ins>*Italian Aerospace Research Centre*</ins> (*CIRA*) and the <ins>*University of Naples Federico II*</ins>, for the analysis and decomposition of the aerodynamic force on clean aerofoils.
+**Unsteady Break-Force 2D** (**UBF2D**) is a pilot two-dimensional code developed by the <ins>*Italian Aerospace Research Centre*</ins> (*C.I.R.A.* SCpA) and the <ins>*University of Naples Federico II*</ins>, for the analysis and decomposition of the aerodynamic force on clean aerofoils.
 It is written in *C++* (roughly 8300 code lines) and uses the public-domain [*TecIO* library](https://tecplot.com/products/tecio-library/) to manage input and output of structured datasets[^1].
 
 [^1]: Incidentally, during the initial developing phase, a bug was found in the TecIO library (version 2021, release 1), related to writing out cell-centred data in structured blocks. It was reported to *Tecplot Inc.* and subsequently fixed in the following releases of the library.
@@ -23,6 +23,7 @@ The integration domain used by far-field force methods is always selected as a s
 + a nodes-based Green-Gauss (G-G) formula, with results allocated at cells-centres.
 + 2<sup>nd</sup>-order finite differences in the computational space associated to the physical curvilinear grid, using nodal values of the working variables (asymmetric stencils are used at grid boundaries to preserve accuracy) and allocating gradient data at grid nodes.
 + a Weighted Least Squares (WLS) method, based on cell-centres data and allocating results at cells centres as well. Ghost cells are used at grid boundaries with appropriate values of the working variables.
+
 The last two methods are discrete gradient approximations with step *h*, where *h* is the generic mesh spacing. The nodes-based G-G method, for curvilinear grids, degenerates to the finite differences scheme with step *h/2*. A detailed discussion on the numerical accuracy of the implemented gradient reconstruction methods can be found in [Sozer et al.](https://doi.org/10.2514/6.2014-1440).
 
 Time derivatives were always computed using a 2<sup>nd</sup>-order central finite differences scheme, with asymmetric stencils adopted at time domain boundaries to preserve accuracy.
