@@ -2,11 +2,11 @@
 
 EXE = UBF2D
 DBG = UBF2D_dbg
-CC = icc
+CC = icpx
 CFLAGS = -std=c++11
 HDR = UBF2D.h
 SRC = cellMetrics.cpp updateFirstTerm.cpp updateCompCorr.cpp updateFourthTerm.cpp updateParasite.cpp updateParasiteNew.cpp updateF_grad_rho.cpp compute_AF.cpp UBF2D.cpp
-TECIOLIBS = /usr/local/apps/tecplot2022r1/360ex_2022r1/bin/libtecio.so
+TECIOLIBS = /opt/tecplot/360ex_2025r2/bin/libtecio.so
 MTL4LIBS = -lpthread -I/u1/mima619/MTL4_GITHUB/trunk
 
 default_target: $(EXE)

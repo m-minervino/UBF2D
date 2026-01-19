@@ -4,20 +4,21 @@
 #include <stdlib.h>
 #include <chrono>
 #include <cstring>
-#include <iostream>
 #include <limits>
 #include <sstream>
 #include <string>
 #include <stdexcept>
+#include <math.h>
+#include <iomanip>
 
 #include "UBF2D.h"
 
 //Linear Algebra (MTL4 library)
-#include </u1/mima619/MTL4_GITHUB/trunk/boost/numeric/mtl/mtl.hpp>
-#include </u1/mima619/MTL4_GITHUB/trunk/boost/numeric/itl/itl.hpp>
+//#include </u1/mima619/MTL4_GITHUB/trunk/boost/numeric/mtl/mtl.hpp>
+//#include </u1/mima619/MTL4_GITHUB/trunk/boost/numeric/itl/itl.hpp> 
 
-using namespace mtl;
-using namespace itl;
+//using namespace mtl;
+//using namespace itl;
 
 double S_tria(double x1, double z1, double x2, double z2, double x3, double z3) {
 	return (-(x3-x1)*(z2-z1)+(z3-z1)*(x2-x1))/2;
@@ -368,11 +369,8 @@ int main(int argc, char** argv) {
 	if (debug_mode) {
 		cout << "-----ZONEs number is: " << numZones << "\n";
 	}
-	int64_t iMax[numZones], kMax[numZones];
-		for (int i = 0; i < numZones; i++) {	//Initialization loop
-			iMax[i] = 0;
-			kMax[i] = 0;
-		}
+	vector < int64_t > iMax(numZones,0);
+	vector < int64_t > kMax(numZones,0);
 	int64_t tmp_max = 0;
 	for (int i = 0; i < numZones; i++) {
 		R = tecZoneGetIJK(inputFileHandle, i + 1, &iMax[i], &tmp_max, &kMax[i]);
@@ -388,16 +386,8 @@ int main(int argc, char** argv) {
 	}
 	int32_t numVars = 0;
 	R = tecDataSetGetNumVars(inputFileHandle, &numVars);
-	int64_t numValues[numZones][numVars];
-		for (int i = 0; i < numZones; i++) {	//Initialization loop
-			for (int j = 0; j < numVars; j++) {
-				numValues[i][j] = 0;
-			}
-		}
-	string in_var_names[numVars];
-		for (int i = 0; i < numVars; i++) {	//Initialization loop
-			in_var_names[i] = "";
-		}
+	vector < vector < int64_t > > numValues(numZones,vector < int64_t > (numVars,0));
+	vector < string > in_var_names(numVars,"");
 	for (int j = 0; j < numVars; j++) {
 		char* name = NULL;
 		R = tecVarGetName(inputFileHandle, j + 1, &name);
@@ -3478,7 +3468,7 @@ int main(int argc, char** argv) {
 
 	//---Update volume integrand of unsteady term, in case of FD gradient scheme selected
 	start = chrono::steady_clock::now();
-	if ((grad_scheme==1)) {
+	if (grad_scheme==1) {
 		for (int t=0; t<Nt; t++) {
 			for (int k = 0; k <kMax[0]-1; k++) {
 				for (int m = 0; m <i_TOT-1; m++) {
@@ -4550,7 +4540,7 @@ int main(int argc, char** argv) {
 			"Formulation C. coeff. (WAVE region surface integral | x-component)",
 			"Formulation C. coeff. (WAVE region surface integral | z-component)"
 		};
-		string DBG_var_names[numDBG];
+		vector < string > DBG_var_names(numDBG,"");
 		vector < vector < vector < double > > > values_DBG(Nt, vector < vector < double > > (numDBG-1, vector < double > ((i_TOT - 1) * (kMax[0] - 1),0)));
 		if (!debug_mode) {
 			numDBG=0;
@@ -4596,7 +4586,7 @@ int main(int argc, char** argv) {
 					numAF_OUT=0;
 					numAF_ADD_OUT=0;
 				}
-			int32_t varTypes[numVars+ compVarsN + compVarsC + numAF + numFlags + numAF_OUT + numAF_ADD_OUT + numDBG];
+			vector < int32_t > varTypes(numVars+ compVarsN + compVarsC + numAF + numFlags + numAF_OUT + numAF_ADD_OUT + numDBG,NAN);
 				for (int i = 0; i < numVars + compVarsN + compVarsC + numAF; i++) {
 					varTypes[i] = 2;
 				}
@@ -4613,11 +4603,8 @@ int main(int argc, char** argv) {
 						varTypes[i] = 2;
 					}
 				}
-			int32_t shareVarFromZone[numVars + compVarsN + compVarsC + numAF + numFlags + numAF_OUT + numAF_ADD_OUT + numDBG];
-				for (int i = 0; i < numVars + compVarsN + compVarsC + numAF + numFlags + numAF_OUT + numAF_ADD_OUT + numDBG; i++) {
-					shareVarFromZone[i] = 0;
-				}
-			int32_t valueLocation[numVars + compVarsN + compVarsC + numAF + numFlags + numAF_OUT + numAF_ADD_OUT + numDBG];
+			vector < int32_t > shareVarFromZone(numVars + compVarsN + compVarsC + numAF + numFlags + numAF_OUT + numAF_ADD_OUT + numDBG,0);
+			vector < int32_t > valueLocation(numVars + compVarsN + compVarsC + numAF + numFlags + numAF_OUT + numAF_ADD_OUT + numDBG,NAN);
 				for (int i = 0; i < numVars + compVarsN; i++) {
 					valueLocation[i] = 1;
 				}
@@ -4630,10 +4617,7 @@ int main(int argc, char** argv) {
 				for (int i = numVars + compVarsN + compVarsC + numAF + numFlags + numAF_OUT + numAF_ADD_OUT; i < numVars + compVarsN + compVarsC + numAF + numFlags + numAF_OUT + numAF_ADD_OUT + numDBG; i++) {
 					valueLocation[i] = 0;
 				}
-			int32_t passiveVarList[numVars + compVarsN + compVarsC + numAF + numFlags + numAF_OUT + numAF_ADD_OUT + numDBG];
-				for (int i = 0; i < numVars + compVarsN + compVarsC + numAF + numFlags + numAF_OUT + numAF_ADD_OUT + numDBG; i++) {
-					passiveVarList[i] = 0;
-				}
+			vector < int32_t > passiveVarList(numVars + compVarsN + compVarsC + numAF + numFlags + numAF_OUT + numAF_ADD_OUT + numDBG,0);
 			int32_t shareConnectivityFromZone = 0;
 			int64_t numFaceConnections = 0;
 			int32_t faceNeighborMode = 0;

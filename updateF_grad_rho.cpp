@@ -1,6 +1,6 @@
 #include <vector>
 #include <math.h>
-#include "/usr/local/apps/tecplot2022r1/360ex_2022r1/include/TECIO.h"
+#include "/opt/tecplot/360ex_2025r2/include/TECIO.h"
 
 using namespace std;
 
