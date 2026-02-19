@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
 	const int numFlags = 4;
 	const int numAuxC = 16;
 	const int numAuxN= 36;
-	const int numAF = 41;
+	const int numAF = 43;
 	const int numAF_ADD = 44;
 	int numDBG=4;
 	//Variables to be read from a case input file
@@ -343,6 +343,10 @@ int main(int argc, char** argv) {
 	}
 	if ((Lamb_form>0)&&(U_FORM==2)) {
 		cout << "Lamb vector calculation based on Crocco's equation (LAMB_FORM>0) not available for the mixed inertial/non-inertial formulation (U_FORM=2).\n";
+		return 0;
+	}
+	if ((Lamb_form>=2)&&(!FT_FORM)) {
+		cout << "Lamb vector formulations 2 and 3 only available with the alternative unsteady term expression (FT_FORM=1).\n";
 		return 0;
 	}
 	Nt=floor((Nt-1)/every)+1;
@@ -2317,7 +2321,7 @@ int main(int argc, char** argv) {
 						cell_values[m][k][numVars+compVarsN+12][t]=(-cell_values[m][k][vx_id-1][t]*cell_values[m][k][numVars+compVarsN+14][t]+
 																	 cell_values[m][k][vz_id-1][t]*cell_values[m][k][numVars+compVarsN+13][t])/
 																	 (2*cell_values[m][k][numVars+1][t]);
-						if (Lamb_form==2) {	//In this case the Lamb vector (and, then, associated auxiliary variables) are computed using the negative-G vector field, instead of the full RHS of Crocco's equation
+						if ((Lamb_form==2)||(Lamb_form==3)) {	//In this case the Lamb vector (and, then, associated auxiliary variables) are computed using the negative-G vector field, instead of the full RHS of Crocco's equation
 							cell_values[m][k][numVars+compVarsN+13][t] = cell_values[m][k][T_id-1][t]*ds_dx - dH_dx;
 							cell_values[m][k][numVars+compVarsN+14][t] = cell_values[m][k][T_id-1][t]*ds_dz - dH_dz;
 						}
@@ -2427,7 +2431,7 @@ int main(int argc, char** argv) {
 						cell_values[m][k][numVars+compVarsN+12][t]=(-cell_values[m][k][vx_id-1][t]*cell_values[m][k][numVars+compVarsN+14][t]+
 																	 cell_values[m][k][vz_id-1][t]*cell_values[m][k][numVars+compVarsN+13][t])/
 																	 (2*cell_values[m][k][numVars+1][t]);
-						if (Lamb_form==2) {	//In this case the Lamb vector (and, then, associated auxiliary variables) are computed using the negative-G vector field, instead of the full RHS of Crocco's equation
+						if ((Lamb_form==2)||(Lamb_form==3)) {	//In this case the Lamb vector (and, then, associated auxiliary variables) are computed using the negative-G vector field, instead of the full RHS of Crocco's equation
 							cell_values[m][k][numVars+compVarsN+13][t] = cell_values[m][k][T_id-1][t]*ds_dx - dH_dx;
 							cell_values[m][k][numVars+compVarsN+14][t] = cell_values[m][k][T_id-1][t]*ds_dz - dH_dz;
 						}
@@ -2511,7 +2515,7 @@ int main(int argc, char** argv) {
 						cell_values[m][k][numVars+compVarsN+12][t]=(-cell_values[m][k][vx_id-1][t]*cell_values[m][k][numVars+compVarsN+14][t]+
 																	 cell_values[m][k][vz_id-1][t]*cell_values[m][k][numVars+compVarsN+13][t])/
 																	 (2*cell_values[m][k][numVars+1][t]);
-						if (Lamb_form==2) {	//In this case the Lamb vector (and, then, associated auxiliary variables) are computed using the negative-G vector field, instead of the full RHS of Crocco's equation
+						if ((Lamb_form==2)||(Lamb_form==3)) {	//In this case the Lamb vector (and, then, associated auxiliary variables) are computed using the negative-G vector field, instead of the full RHS of Crocco's equation
 							cell_values[m][k][numVars+compVarsN+13][t] = cell_values[m][k][T_id-1][t]*ds_dx - dH_dx;
 							cell_values[m][k][numVars+compVarsN+14][t] = cell_values[m][k][T_id-1][t]*ds_dz - dH_dz;
 						}
@@ -2621,7 +2625,7 @@ int main(int argc, char** argv) {
 				}
 				//FAR-FIELD elementary aerodynamic force using vorticity-based methods
 				//---Unsteady term (volume integrand)
-				if (Lamb_form < 2) {	//Only compute in cases it is needed
+				if (Lamb_form != 2) {	//Only compute in cases it is needed
 					if (!FT_FORM) {
 						//------Spatial gradients of (rho*dV/dt) or (rho*dV'/dt') or (rho*dV/dt')
 						double drhoVtx_dz=NAN, drhoVtz_dx=NAN;
@@ -2837,7 +2841,7 @@ int main(int argc, char** argv) {
 						}
 					}
 				}
-				//------Conditionally add turbulent term in the case of LAMB_FORM=1 or LAMB_FORM=2
+				//------Conditionally compute turbulent term in the case of LAMB_FORM>0
 				if (Lamb_form>0) {
 				//------Spatial gradients of (rho*grad(kt))
 					double drhoGradXkt_dz=NAN, drhoGradZkt_dx=NAN;
@@ -2854,7 +2858,7 @@ int main(int argc, char** argv) {
 									((nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][31][t]+nodal_values[m+1][k+1][rho_id-1][t]*aux_values_N[m+1][k+1][31][t])/2)*dz_3+
 									((nodal_values[m][k][rho_id-1][t]*aux_values_N[m][k][31][t]+nodal_values[m][k+1][rho_id-1][t]*aux_values_N[m][k+1][31][t])/2)*dz_4);
 							break;
-						case 1:		//Do nothing. spatial gradients will be calculated at grid nodes later on, then averaged to CC in a following step.
+						case 1:		//Do nothing. Spatial gradients will be calculated at grid nodes later on, then averaged to CC in a following step.
 							break;
 						case 2:		//Weighted-Least-Squares
 							double D_1, D_2, D_3, D_4;
@@ -2902,10 +2906,10 @@ int main(int argc, char** argv) {
 								drhoGradZkt_dx=WLS[0][0]*D_1 + WLS[0][1]*D_2 + WLS[0][2]*D_3 + WLS[0][3]*D_4;
 								break;
 						}
-					//------Unsteady volume integrand
+					//------Turbulent term integrand
 					if (grad_scheme!=1) {	//Save CPU as these variables will be effectively computed in a following code section
-						AF_elem[m][k][35][t] = AF_elem[m][k][35][t] + cell_values[m][k][numVars + compVarsN + 16][t] * (drhoGradXkt_dz - drhoGradZkt_dx) * cell_values[m][k][numVars + compVarsN][t];
-						AF_elem[m][k][36][t] = AF_elem[m][k][36][t] -cell_values[m][k][numVars + compVarsN + 15][t] * (drhoGradXkt_dz - drhoGradZkt_dx) * cell_values[m][k][numVars + compVarsN][t];
+						AF_elem[m][k][41][t] =  cell_values[m][k][numVars + compVarsN + 16][t] * (drhoGradXkt_dz - drhoGradZkt_dx) * cell_values[m][k][numVars + compVarsN][t];
+						AF_elem[m][k][42][t] = -cell_values[m][k][numVars + compVarsN + 15][t] * (drhoGradXkt_dz - drhoGradZkt_dx) * cell_values[m][k][numVars + compVarsN][t];
 					}
 				}
 				//---Unsteady volume integrand of Formulation C
@@ -2918,7 +2922,7 @@ int main(int argc, char** argv) {
 											cell_values[m][k][numVars + compVarsN][t];
 				//}
 				//---Unsteady volume integrand of apparent force from relative motion term
-				if ((U_FORM==1)&&(Lamb_form<2)) {	// Only computed when needed (in particular: for LAMB_FORM < 2)
+				if ((U_FORM==1)&&(Lamb_form!=2)) {	// Only computed when needed (in particular: for LAMB_FORM != 2)
 					AF_elem[m][k][39][t] = 0.25*(aux_values_N[m][k][27][t]*nodal_values[m][k][rho_id-1][t]+aux_values_N[m+1][k][27][t]*nodal_values[m+1][k][rho_id-1][t]+
 												aux_values_N[m+1][k+1][27][t]*nodal_values[m+1][k+1][rho_id-1][t]+aux_values_N[m][k+1][27][t]*nodal_values[m][k+1][rho_id-1][t])*
 												cell_values[m][k][numVars + compVarsN][t];
@@ -3186,7 +3190,7 @@ int main(int argc, char** argv) {
 
 	//---Compute spatial gradients of (rho*dV/dt) or (rho*dV/dt') at grid nodes.
 	start = chrono::steady_clock::now();
-	if ((grad_scheme==1)&&(Lamb_form<2)&&(!FT_FORM)) {	//Only compute in case they are needed (FT_FORM==false && LAMB_FORM < 2) and the FD gradient scheme is selected (grad_scheme==1)
+	if ((grad_scheme==1)&&(Lamb_form!=2)&&(!FT_FORM)) {	//Only compute in case they are needed (FT_FORM==false && LAMB_FORM!=2) and the FD gradient scheme is selected (grad_scheme==1)
 		for (int t=0; t<Nt; t++) {
 			for (int k = 0; k <kMax[0]; k++) {
 				for (int m = 0; m <i_TOT; m++) {
@@ -3466,13 +3470,13 @@ int main(int argc, char** argv) {
 		cout << "END of computing spatial gradients of (rho*grad(kt)) at grid nodes..   (" << chrono::duration_cast<chrono::milliseconds>(end - start).count() << " ms)\n";
 	}
 
-	//---Update volume integrand of unsteady term, in case of FD gradient scheme selected
+	//---Update volume integrand of unsteady and turbulent terms, in case of FD gradient scheme selected
 	start = chrono::steady_clock::now();
 	if (grad_scheme==1) {
 		for (int t=0; t<Nt; t++) {
 			for (int k = 0; k <kMax[0]-1; k++) {
 				for (int m = 0; m <i_TOT-1; m++) {
-					if ((Lamb_form<2)&&(!FT_FORM)) {
+					if ((Lamb_form!=2)&&(!FT_FORM)) {	//Unsteady term
 						AF_elem[m][k][35][t] = cell_values[m][k][numVars + compVarsN + 16][t] * 0.25 *
 							(nodal_values[m][k][1][t]+nodal_values[m+1][k][1][t]+nodal_values[m+1][k+1][1][t]+nodal_values[m][k+1][1][t]) *
 							cell_values[m][k][numVars + compVarsN][t];
@@ -3480,11 +3484,11 @@ int main(int argc, char** argv) {
 							(nodal_values[m][k][1][t]+nodal_values[m+1][k][1][t]+nodal_values[m+1][k+1][1][t]+nodal_values[m][k+1][1][t]) *
 							cell_values[m][k][numVars + compVarsN][t];
 					}
-					if (Lamb_form > 0) {	//Add turbulent term
-						AF_elem[m][k][35][t] = AF_elem[m][k][35][t] + cell_values[m][k][numVars + compVarsN + 16][t] *
+					if (Lamb_form > 0) {	//Turbulent term
+						AF_elem[m][k][41][t] =  cell_values[m][k][numVars + compVarsN + 16][t] *
 												(0.25*(aux_values_N[m][k][32][t]+aux_values_N[m+1][k][32][t]+aux_values_N[m+1][k+1][32][t]+aux_values_N[m][k+1][32][t])) *
 												cell_values[m][k][numVars + compVarsN][t];
-						AF_elem[m][k][36][t] = AF_elem[m][k][36][t] -cell_values[m][k][numVars + compVarsN + 15][t] *
+						AF_elem[m][k][42][t] = -cell_values[m][k][numVars + compVarsN + 15][t] *
 												(0.25*(aux_values_N[m][k][32][t]+aux_values_N[m+1][k][32][t]+aux_values_N[m+1][k+1][32][t]+aux_values_N[m][k+1][32][t])) *
 												cell_values[m][k][numVars + compVarsN][t];
 					}
@@ -3984,10 +3988,11 @@ int main(int argc, char** argv) {
 		printf("%s%7.4f%s\n",           "|                  ---------------------------------------------- 1st term :  (",AERO[16][t],")   |");
 		printf("%s%7.4f%s\n",           "|                  ---------------------------------------------- 2nd term :  (",AERO[19][t],")   |");
 		printf("%s%7.4f%s\n",           "|                        + Body surface contrib.  (inv. or mov. grid only) :  (",AERO[numAF+13][t],")   |");
-		if (Lamb_form<2) {
-		printf("%s%7.4f%s\n",           "|                  (EXPLICIT VISCOUS STRESS TENSOR CONTRIBUTION) :             ",AERO[numAF+3][t]+AERO[numAF+5][t],"    |");
+		if (Lamb_form!=2) {
+		printf("%s%7.4f%s\n",           "|                  (EXPLICIT VISCOUS STRESS TENSOR CONTRIBUTION) :             ",AERO[numAF+3][t]+AERO[numAF+5][t]+AERO[42][t],"    |");
 		printf("%s%7.4f%s\n",           "|                  ---------------------------------------------- 1st term :  (",AERO[numAF+3][t],")   |");
 		printf("%s%7.4f%s\n",           "|                  ---------------------------------------------- 2nd term :  (",AERO[numAF+5][t],")   |");
+		printf("%s%7.4f%s\n",           "|                  ------------------ turbulent term (zero if LAMB_FORM=0) :  (",AERO[42][t],")   |");
 		printf("%s%7.4f%s\n",           "|                  (ONERA COMPRESS. CORRECTION TERM - SURF. INTEGR. FORM.) :   ",-AERO[numAF+7][t],"    |");
 		printf("%s%7.4f%s\n",           "|                  (ONERA COMPRESS. CORRECTION TERM -  VOL. INTEGR. FORM.) :   ",-AERO[25][t],"    |");
 		printf("%s%7.4f%s\n",           "|                  (UNSTEADY TERM):                                            ",AERO[36][t],"    |");
@@ -4006,26 +4011,30 @@ int main(int argc, char** argv) {
 																														AERO[numAF+3][t]+AERO[numAF+5][t]+
 																														AERO[numAF+9][t]+
 																														AERO[36][t]+AERO[numAF+33][t]+
-																														AERO[40][t]+AERO[numAF+37][t],"    |");
+																														AERO[40][t]+AERO[numAF+37][t]+
+																														AERO[42][t],"    |");
 		printf("%s%7.4f%s\n",           "|TOTAL LIFT COEFFICIENT  (  C  FORMULATION) :                                  ",AERO[numAF+17][t]+AERO[numAF+19][t]+
 																														AERO[numAF+21][t]+AERO[38][t]+
 																														AERO[numAF+35][t]+AERO[numAF+1][t]+
 																														AERO[numAF+3][t]+AERO[numAF+5][t]+
 																														AERO[36][t]+AERO[numAF+33][t]+
-																														AERO[40][t]+AERO[numAF+37][t],"    |");
+																														AERO[40][t]+AERO[numAF+37][t]+
+																														AERO[42][t],"    |");
 		printf("%s%7.4f%s\n",           "|TOTAL LIFT COEFFICIENT  (MIX. FORMULATION: ORG. F_RHO;  VOL. INTEGR. F_S) :   ",AERO[1][t]+AERO[3][t]+
 																														AERO[16][t]+AERO[19][t]+
 																														AERO[numAF+3][t]+AERO[numAF+5][t]+
 																														AERO[numAF+9][t]+AERO[numAF+11][t]+
 																														AERO[numAF+13][t]+
 																														AERO[36][t]+AERO[numAF+33][t]+
-																														AERO[40][t]+AERO[numAF+37][t],"    |");
+																														AERO[40][t]+AERO[numAF+37][t]+
+																														AERO[42][t],"    |");
 		printf("%s%7.4f%s\n",           "|TOTAL LIFT COEFFICIENT  (2014 FORMULATION: ORG. F_RHO; SURF. INTEGR. F_S) :   ",AERO[1][t]+AERO[3][t]+
 																														AERO[numAF+1][t]+
 																														AERO[numAF+3][t]+AERO[numAF+5][t]+
 																														AERO[numAF+9][t]+AERO[numAF+11][t]+
 																														AERO[36][t]+AERO[numAF+33][t]+
-																														AERO[40][t]+AERO[numAF+37][t],"    |");
+																														AERO[40][t]+AERO[numAF+37][t]+
+																														AERO[42][t],"    |");
 		printf("%s%7.4f%s\n",           "|TOTAL LIFT COEFFICIENT  (2018 FORMULATION: MOD. F_RHO;  VOL. INTEGR. F_S) :   ",AERO[1][t]+AERO[5][t]+AERO[7][t]+
 																														AERO[9][t]+AERO[11][t]+AERO[13][t]+
 																														AERO[16][t]+AERO[19][t]+
@@ -4033,35 +4042,46 @@ int main(int argc, char** argv) {
 																														AERO[numAF+9][t]+AERO[numAF+11][t]+
 																														AERO[numAF+13][t]+
 																														AERO[36][t]+AERO[numAF+33][t]+
-																														AERO[40][t]+AERO[numAF+37][t],"    |");
+																														AERO[40][t]+AERO[numAF+37][t]+
+																														AERO[42][t],"    |");
 		printf("%s%7.4f%s\n",           "|TOTAL LIFT COEFFICIENT  (2017 FORMULATION: MOD. F_RHO; SURF. INTEGR. F_S) :   ",AERO[1][t]+AERO[5][t]+AERO[7][t]+
 																														AERO[9][t]+AERO[11][t]+AERO[13][t]+
 																														AERO[numAF+1][t]+AERO[numAF+3][t]+AERO[numAF+5][t]+
 																														AERO[numAF+9][t]+AERO[numAF+11][t]+
 																														AERO[36][t]+AERO[numAF+33][t]+
-																														AERO[40][t]+AERO[numAF+37][t],"    |");
+																														AERO[40][t]+AERO[numAF+37][t]+
+																														AERO[42][t],"    |");
 /* 		printf("%s%7.4f%s\n",           "|TOTAL LIFT COEFFICIENT  (2021 FORMULATION: ONERA     ; SURF. INTEGR. F_S) :   ",AERO[1][t]+AERO[5][t]+AERO[7][t]+
 																														AERO[9][t]+AERO[11][t]+AERO[13][t]-
 																														AERO[numAF+7][t]+
 																														AERO[numAF+9][t]+AERO[numAF+11][t]+
 																														AERO[36][t]+AERO[numAF+33][t],"    |"); */
-		} else {
+		} else if (Lamb_form==2) {
 		printf("%s%7.4f%s\n",           "|TOTAL LIFT COEFFICIENT  (LIU  FORMULATION) :                                  ",AERO[1][t]+AERO[21][t]+AERO[numAF+15][t]+
 																														AERO[numAF+1][t]+
 																														AERO[numAF+9][t]+
 																														AERO[36][t]+
-																														Clf_nf[t],"    |");
+																														Clf_nf[t]+AERO[42][t],"    |");
 		printf("%s%7.4f%s\n",           "|TOTAL LIFT COEFFICIENT  (MIX. FORMULATION: ORG. F_RHO;  VOL. INTEGR. F_S) :   ",AERO[1][t]+AERO[3][t]+
 																														AERO[16][t]+AERO[19][t]+
 																														AERO[numAF+9][t]+AERO[numAF+11][t]+
 																														AERO[numAF+13][t]+
 																														AERO[36][t]+
-																														Clf_nf[t],"    |");
+																														Clf_nf[t]+AERO[42][t],"    |");
 		printf("%s%7.4f%s\n",           "|TOTAL LIFT COEFFICIENT  (2014 FORMULATION: ORG. F_RHO; SURF. INTEGR. F_S) :   ",AERO[1][t]+AERO[3][t]+
 																														AERO[numAF+1][t]+																														
 																														AERO[numAF+9][t]+AERO[numAF+11][t]+
 																														AERO[36][t]+
-																														Clf_nf[t],"    |");
+																														Clf_nf[t]+AERO[42][t],"    |");
+		} else {
+			printf("%s%7.4f%s\n",           "|TOTAL LIFT COEFFICIENT  (LIU  FORMULATION) :                                  ",AERO[1][t]+AERO[21][t]+AERO[numAF+15][t]+
+																															AERO[numAF+1][t]+
+																															AERO[numAF+9][t]+
+																															Clf_nf[t]+AERO[42][t],"    |");
+			printf("%s%7.4f%s\n",           "|TOTAL LIFT COEFFICIENT  (2014 FORMULATION: ORG. F_RHO; SURF. INTEGR. F_S) :   ",AERO[1][t]+AERO[3][t]+
+																															AERO[numAF+1][t]+																														
+																															AERO[numAF+9][t]+AERO[numAF+11][t]+
+																															Clf_nf[t]+AERO[42][t],"    |");
 		}
  		printf("%s\n",                  "|-----------------------------------------------------------------------------------------|");
 		printf("%s\n",                  "|                                                                                         |");
@@ -4105,10 +4125,11 @@ int main(int argc, char** argv) {
 		printf("%s%8.1f%s\n",           "|                  --------------------------------- 2nd term ;    VISCOUS : (",10000*(AERO[18][t]),")   |");
 		printf("%s%8.1f%s\n",           "|                  --------------------------------- 2nd term ;   SPURIOUS : (",10000*(AERO[34][t]),")   |");
 		printf("%s%8.1f%s\n",           "|                        + Body surface contrib.  (inv. or mov. grid only) : (",10000*(AERO[numAF+12][t]),")   |");
-		if (Lamb_form<2) {
-		printf("%s%8.1f%s\n",           "|                  (EXPLICIT VISCOUS STRESS TENSOR CONTRIBUTION):             ",10000*(AERO[numAF+2][t]+AERO[numAF+4][t]),"    |");
+		if (Lamb_form!=2) {
+		printf("%s%8.1f%s\n",           "|                  (EXPLICIT VISCOUS STRESS TENSOR CONTRIBUTION):             ",10000*(AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t]),"    |");
 		printf("%s%8.1f%s\n",           "|                  ---------------------------------------------- 1st term : (",10000*(AERO[numAF+2][t]),")   |");
 		printf("%s%8.1f%s\n",           "|                  ---------------------------------------------- 2nd term : (",10000*(AERO[numAF+4][t]),")   |");
+		printf("%s%7.4f%s\n",           "|                  ------------------ turbulent term (zero if LAMB_FORM=0) : (",AERO[41][t],")   |");
 		printf("%s%8.1f%s\n",           "|                  (ONERA COMPRESS. CORR. TERM - SURF. INTEGR. FORM.)   :  +/-",10000*(AERO[numAF+6][t]),"    |");
 		printf("%s%8.1f%s\n",			"|                  --------------------------------- (VISCOUS region only) :  ",10000*(AERO[numAF+24][t]),"    |");
 		printf("%s%8.1f%s\n",			"|                  --------------------------------- (VISCOUS  WAKE  only) :  ",10000*(AERO[numAF+30][t]),"    |");
@@ -4158,6 +4179,23 @@ int main(int argc, char** argv) {
 																														AERO[numAF+6][t]+
 																														AERO[numAF+8][t]+AERO[numAF+10][t]),"    |");
 		}
+		} else if (Lamb_form==3) {
+		if (ONERA_corr) {
+		printf("%s%8.1f%s\n",           "|INDUCED DRAG COUNTS      (     LIU FORMULATION)  ------------------------ :  ",10000*(AERO[0][t]-AERO[35][t]-AERO[39][t]-AERO[numAF+4][t]+Cdf_nf[t]+
+																														AERO[20][t]+AERO[numAF+14][t]+
+																														AERO[numAF+8][t]-AERO[numAF+6][t]),"    |");
+		printf("%s%8.1f%s\n",           "|INDUCED DRAG COUNTS      (ORIGINAL FORMULATION)  ------------------------ :  ",10000*(AERO[0][t]-AERO[35][t]-AERO[39][t]-AERO[numAF+4][t]+Cdf_nf[t]+
+																														AERO[2][t]+
+																														AERO[numAF+8][t]+AERO[numAF+10][t]+
+																														-AERO[numAF+6][t]),"    |");
+		} else {
+		printf("%s%8.1f%s\n",           "|INDUCED DRAG COUNTS      (     LIU FORMULATION)  ------------------------ :  ",10000*(AERO[0][t]-AERO[35][t]-AERO[39][t]-AERO[numAF+4][t]+Cdf_nf[t]+
+																														AERO[20][t]+AERO[numAF+14][t]+
+																														AERO[numAF+8][t]),"    |");
+		printf("%s%8.1f%s\n",           "|INDUCED DRAG COUNTS      (ORIGINAL FORMULATION)  ------------------------ :  ",10000*(AERO[0][t]-AERO[35][t]-AERO[39][t]-AERO[numAF+4][t]+Cdf_nf[t]+
+																														AERO[2][t]+
+																														AERO[numAF+8][t]+AERO[numAF+10][t]),"    |");
+		}
 		} else {
 			//To be implemented
 		}
@@ -4165,44 +4203,53 @@ int main(int argc, char** argv) {
 		if (Lamb_form<2) {
 		if (ONERA_corr) {
 		printf("%s%8.1f%s\n",           "|PARASS. DRAG COUNTS      (SURF. INTEGR.  FORMULATION) ------------- TOTAL :  ",10000*(AERO[numAF][t]+AERO[numAF+6][t]+
-																																AERO[numAF+2][t]+AERO[numAF+4][t]),"    |");
+																																AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t]),"    |");
 		printf("%s%8.1f%s\n",			"|                         ------------------------------------------- WAVE :  ",10000*(AERO[numAF+38][t]+AERO[numAF+40][t]),"    |");
 		printf("%s%8.1f%s\n",			"|                         ---------------------------------------- VISCOUS :  ",10000*(AERO[numAF+22][t]+
-																																AERO[numAF+2][t]+AERO[numAF+4][t]+
+																																AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t]+
 																																AERO[numAF+24][t]),"    |");
 		printf("%s%8.1f%s\n",			"|                         --------------------------------------- SPURIOUS :  ",10000*(AERO[numAF][t]+AERO[numAF+6][t]-AERO[numAF+22][t]-
 																																AERO[numAF+24][t]-AERO[numAF+38][t]-AERO[numAF+40][t]),"    |");
 		printf("%s%8.1f%s\n",           "|PARASS. DRAG COUNTS      (VOLUME INTEGR. FORMULATION) ------------- TOTAL :  ",10000*(AERO[14][t]+AERO[15][t]+AERO[33][t]+
 																																AERO[17][t]+AERO[18][t]+AERO[34][t]+
 																																AERO[22][t]+AERO[23][t]+AERO[24][t]+
-																																AERO[numAF+2][t]+AERO[numAF+4][t]+
+																																AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t]+
 																																AERO[numAF+12][t]),"    |");
 		printf("%s%8.1f%s\n",           "|                         ------------------------------------------- WAVE :  ",10000*(AERO[14][t]+AERO[17][t]+
 																																AERO[22][t]),"    |");
 		printf("%s%8.1f%s\n",           "|                         ---------------------------------------- VISCOUS :  ",10000*(AERO[15][t]+AERO[18][t]+AERO[23][t]+
-																																AERO[numAF+2][t]+AERO[numAF+4][t]),"    |");
+																																AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t]),"    |");
 		printf("%s%8.1f%s\n",           "|                         --------------------------------------- SPURIOUS :  ",10000*(AERO[33][t]+AERO[34][t]+AERO[24][t]),"    |");
 		printf("%s%8.1f%s\n",           "|                         ----------------- BODY  (inv. or mov. grid only) :  ",10000*(AERO[numAF+12][t]),"    |");
 		} else {
 		printf("%s%8.1f%s\n",           "|PARASS. DRAG COUNTS      (SURF. INTEGR.  FORMULATION) ------------- TOTAL :  ",10000*(AERO[numAF][t]+
-																																AERO[numAF+2][t]+AERO[numAF+4][t]),"    |");
+																																AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t]),"    |");
 		printf("%s%8.1f%s\n",			"|                         ------------------------------------------- WAVE :  ",10000*(AERO[numAF+38][t]),"    |");
 		printf("%s%8.1f%s\n",			"|                         ---------------------------------------- VISCOUS :  ",10000*(AERO[numAF+22][t]+
-																																AERO[numAF+2][t]+AERO[numAF+4][t]),"    |");
+																																AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t]),"    |");
 		printf("%s%8.1f%s\n",			"|                         --------------------------------------- SPURIOUS :  ",10000*(AERO[numAF][t]-AERO[numAF+22][t]-
 																																-AERO[numAF+38][t]),"    |");
 		printf("%s%8.1f%s\n",           "|PARASS. DRAG COUNTS      (VOLUME INTEGR. FORMULATION) ------------- TOTAL :  ",10000*(AERO[14][t]+AERO[15][t]+AERO[33][t]+
 																																AERO[17][t]+AERO[18][t]+AERO[34][t]+
-																																AERO[numAF+2][t]+AERO[numAF+4][t]+
+																																AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t]+
 																																AERO[numAF+12][t]),"    |");
 		printf("%s%8.1f%s\n",           "|                         ------------------------------------------- WAVE :  ",10000*(AERO[14][t]+AERO[17][t]),"    |");
 		printf("%s%8.1f%s\n",           "|                         ---------------------------------------- VISCOUS :  ",10000*(AERO[15][t]+AERO[18][t]+
-																																AERO[numAF+2][t]+AERO[numAF+4][t]),"    |");
+																																AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t]),"    |");
 		printf("%s%8.1f%s\n",           "|                         --------------------------------------- SPURIOUS :  ",10000*(AERO[33][t]+AERO[34][t]),"    |");
 		printf("%s%8.1f%s\n",           "|                         ----------------- BODY  (inv. or mov. grid only) :  ",10000*(AERO[numAF+12][t]),"    |");
 		printf("%s%8.1f%s\n",           "|PARASS. DRAG COUNTS      (ONERA SURF. INTEGR. FORMULATION ) ------- TOTAL :  ",10000*(AERO[numAF][t]+
-																																AERO[numAF+2][t]+AERO[numAF+4][t]+
+																																AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t]+
 																																AERO[numAF+6][t]),"    |");
+		}
+		} else if (Lamb_form==3) {
+		if (ONERA_corr) {
+		printf("%s%8.1f%s\n",           "|PARASS. DRAG COUNTS      (SURF. INTEGR.  FORMULATION) ------------- TOTAL :  ",10000*(AERO[numAF][t]-AERO[numAF+32][t]-AERO[numAF+36][t]-AERO[numAF+2][t]+
+																																AERO[numAF+6][t]+
+																																AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t]),"    |");
+		} else {
+		printf("%s%8.1f%s\n",           "|PARASS. DRAG COUNTS      (SURF. INTEGR.  FORMULATION) ------------- TOTAL :  ",10000*(AERO[numAF][t]-AERO[numAF+32][t]-AERO[numAF+36][t]-AERO[numAF+2][t]+
+																																AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t]),"    |");
 		}
 		} else {
 			//To be implemented
@@ -4212,27 +4259,27 @@ int main(int argc, char** argv) {
 		if (Lamb_form<2) {
 		printf("%s%8.1f%s\n",           "|  TOTAL DRAG COUNTS      (LIU  FORMULATION):                                 ",10000*(AERO[0][t]+AERO[20][t]+
 																														AERO[numAF+14][t]+AERO[numAF][t]+
-																														AERO[numAF+2][t]+AERO[numAF+4][t]+
+																														AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t]+
 																														AERO[numAF+8][t]+
 																														AERO[35][t]+AERO[numAF+32][t]+
 																														AERO[39][t]+AERO[numAF+36][t]),"    |");
 		printf("%s%8.1f%s\n",           "|  TOTAL DRAG COUNTS      (  C  FORMULATION):                                 ",10000*(AERO[numAF+16][t]+AERO[numAF+18][t]+
 																														AERO[numAF+20][t]+AERO[37][t]+
 																														AERO[numAF+34][t]+AERO[numAF][t]+
-																														AERO[numAF+2][t]+AERO[numAF+4][t]+
+																														AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t]+
 																														AERO[35][t]+AERO[numAF+32][t]+
 																														AERO[39][t]+AERO[numAF+36][t]),"    |");
 		printf("%s%8.1f%s\n",           "|  TOTAL DRAG COUNTS      (MIX. FORMULATION: ORG. F_RHO;  VOL. INTEGR. F_S):  ",10000*(AERO[0][t]+AERO[2][t]+AERO[14][t]+
 																														AERO[15][t]+AERO[17][t]+AERO[18][t]+
 																														AERO[33][t]+AERO[34][t]+
-																														AERO[numAF+2][t]+AERO[numAF+4][t]+
+																														AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t]+
 																														AERO[numAF+8][t]+AERO[numAF+10][t]+
 																														AERO[numAF+12][t]+
 																														AERO[35][t]+AERO[numAF+32][t]+
 																														AERO[39][t]+AERO[numAF+36][t]),"    |");
 		printf("%s%8.1f%s\n",           "|  TOTAL DRAG COUNTS      (2014 FORMULATION: ORG. F_RHO; SURF. INTEGR. F_S):  ",10000*(AERO[0][t]+AERO[2][t]+
 																														AERO[numAF][t]+
-																														AERO[numAF+2][t]+AERO[numAF+4][t]+
+																														AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t]+
 																														AERO[numAF+8][t]+AERO[numAF+10][t]+
 																														AERO[35][t]+AERO[numAF+32][t]+
 																														AERO[39][t]+AERO[numAF+36][t]),"    |");
@@ -4240,7 +4287,7 @@ int main(int argc, char** argv) {
 																														AERO[8][t]+AERO[10][t]+AERO[12][t]+
 																														AERO[14][t]+AERO[15][t]+AERO[17][t]+
 																														AERO[18][t]+AERO[33][t]+AERO[34][t]+
-																														AERO[numAF+2][t]+AERO[numAF+4][t]+
+																														AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t]+
 																														AERO[numAF+8][t]+AERO[numAF+10][t]+
 																														AERO[numAF+12][t]+
 																														AERO[35][t]+AERO[numAF+32][t]+
@@ -4248,28 +4295,37 @@ int main(int argc, char** argv) {
 		printf("%s%8.1f%s\n",           "|  TOTAL DRAG COUNTS      (2017 FORMULATION: MOD. F_RHO; SURF. INTEGR. F_S):  ",10000*(AERO[0][t]+AERO[4][t]+AERO[6][t]+
 																														AERO[8][t]+AERO[10][t]+AERO[12][t]+
 																														AERO[numAF][t]+
-																														AERO[numAF+2][t]+AERO[numAF+4][t]+
+																														AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t]+
 																														AERO[numAF+8][t]+AERO[numAF+10][t]+
 																														AERO[35][t]+AERO[numAF+32][t]+
 																														AERO[39][t]+AERO[numAF+36][t]),"    |");
-		} else {
+		} else if (Lamb_form==2) {
 		printf("%s%8.1f%s\n",           "|  TOTAL DRAG COUNTS      (LIU  FORMULATION):                                 ",10000*(AERO[0][t]+AERO[20][t]+
 																														AERO[numAF+14][t]+AERO[numAF][t]+																														
 																														AERO[numAF+8][t]+
 																														AERO[35][t]+
-																														Cdf_nf[t]),"    |");
+																														Cdf_nf[t]+AERO[41][t]),"    |");
 		printf("%s%8.1f%s\n",           "|  TOTAL DRAG COUNTS      (MIX. FORMULATION: ORG. F_RHO;  VOL. INTEGR. F_S):  ",10000*(AERO[0][t]+AERO[2][t]+AERO[14][t]+
 																														AERO[15][t]+AERO[17][t]+AERO[18][t]+
 																														AERO[33][t]+AERO[34][t]+																														
 																														AERO[numAF+8][t]+AERO[numAF+10][t]+
 																														AERO[numAF+12][t]+
 																														AERO[35][t]+
-																														Cdf_nf[t]),"    |");
+																														Cdf_nf[t]+AERO[41][t]),"    |");
 		printf("%s%8.1f%s\n",           "|  TOTAL DRAG COUNTS      (2014 FORMULATION: ORG. F_RHO; SURF. INTEGR. F_S):  ",10000*(AERO[0][t]+AERO[2][t]+
 																														AERO[numAF][t]+
 																														AERO[numAF+8][t]+AERO[numAF+10][t]+
 																														AERO[35][t]+
-																														Cdf_nf[t]),"    |");
+																														Cdf_nf[t]+AERO[41][t]),"    |");
+		} else {
+		printf("%s%8.1f%s\n",           "|  TOTAL DRAG COUNTS      (LIU  FORMULATION):                                 ",10000*(AERO[0][t]+AERO[20][t]+
+																														AERO[numAF+14][t]+AERO[numAF][t]+																														
+																														AERO[numAF+8][t]+
+																														Cdf_nf[t]+AERO[41][t]),"    |");
+		printf("%s%8.1f%s\n",           "|  TOTAL DRAG COUNTS      (2014 FORMULATION: ORG. F_RHO; SURF. INTEGR. F_S):  ",10000*(AERO[0][t]+AERO[2][t]+
+																														AERO[numAF][t]+
+																														AERO[numAF+8][t]+AERO[numAF+10][t]+
+																														Cdf_nf[t]+AERO[41][t]),"    |");
 		}
 		printf("%s\n",					"|                                                                                         |");
 		printf("%s\n",                  "|-----------------------------------------------------------------------------------------|");
@@ -4322,37 +4378,39 @@ int main(int argc, char** argv) {
 		for (int t=0; t<Nt; t++) {
 			fprintf (histFile, "%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t",
 				time[t]*V_inf/chord, Clp_nf[t]+ Clf_nf[t], Cdp_nf[t] + Cdf_nf[t], Clf_nf[t], Cdf_nf[t]);
-			if (Lamb_form<2) {
-				fprintf (histFile, "%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t",
+			switch (Lamb_form) {
+				case 0: case 1:	//The turbulent term is added to all formulations since, even for case Lamb_Form=0, since it will not be computed in this case and retain its zero initialization.
+					fprintf (histFile, "%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t",
 					//LIU
-					AERO[1][t]+AERO[21][t]+AERO[numAF+15][t]+AERO[numAF+1][t]+AERO[numAF+3][t]+AERO[numAF+5][t]+AERO[numAF+9][t]+AERO[36][t]+AERO[numAF+33][t]+AERO[40][t]+AERO[numAF+37][t],
-					AERO[0][t]+AERO[20][t]+AERO[numAF+14][t]+AERO[numAF][t]+AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[numAF+8][t]+AERO[35][t]+AERO[numAF+32][t]+AERO[39][t]+AERO[numAF+36][t],
+					AERO[1][t]+AERO[21][t]+AERO[numAF+15][t]+AERO[numAF+1][t]+AERO[numAF+3][t]+AERO[numAF+5][t]+AERO[numAF+9][t]+AERO[36][t]+AERO[numAF+33][t]+AERO[40][t]+AERO[numAF+37][t]+AERO[42][t],
+					AERO[0][t]+AERO[20][t]+AERO[numAF+14][t]+AERO[numAF][t]+AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[numAF+8][t]+AERO[35][t]+AERO[numAF+32][t]+AERO[39][t]+AERO[numAF+36][t]+AERO[41][t],
 					//2014
-					AERO[1][t]+AERO[3][t]+AERO[numAF+1][t]+AERO[numAF+3][t]+AERO[numAF+5][t]+AERO[numAF+9][t]+AERO[numAF+11][t]+AERO[36][t]+AERO[numAF+33][t]+AERO[40][t]+AERO[numAF+37][t],
-					AERO[0][t]+AERO[2][t]+AERO[numAF][t]+AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[numAF+8][t]+AERO[numAF+10][t]+AERO[35][t]+AERO[numAF+32][t]+AERO[39][t]+AERO[numAF+36][t],
+					AERO[1][t]+AERO[3][t]+AERO[numAF+1][t]+AERO[numAF+3][t]+AERO[numAF+5][t]+AERO[numAF+9][t]+AERO[numAF+11][t]+AERO[36][t]+AERO[numAF+33][t]+AERO[40][t]+AERO[numAF+37][t]+AERO[42][t],
+					AERO[0][t]+AERO[2][t]+AERO[numAF][t]+AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[numAF+8][t]+AERO[numAF+10][t]+AERO[35][t]+AERO[numAF+32][t]+AERO[39][t]+AERO[numAF+36][t]+AERO[41][t],
 					//MIX
-					AERO[1][t]+AERO[3][t]+AERO[16][t]+AERO[19][t]+AERO[numAF+3][t]+AERO[numAF+5][t]+AERO[numAF+9][t]+AERO[numAF+11][t]+AERO[numAF+13][t]+AERO[36][t]+AERO[numAF+33][t]+AERO[40][t]+AERO[numAF+37][t],
-					AERO[0][t]+AERO[2][t]+AERO[14][t]+AERO[15][t]+AERO[17][t]+AERO[18][t]+AERO[33][t]+AERO[34][t]+AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[numAF+8][t]+AERO[numAF+10][t]+AERO[numAF+12][t]+AERO[35][t]+AERO[numAF+32][t]+AERO[39][t]+AERO[numAF+36][t],
+					AERO[1][t]+AERO[3][t]+AERO[16][t]+AERO[19][t]+AERO[numAF+3][t]+AERO[numAF+5][t]+AERO[numAF+9][t]+AERO[numAF+11][t]+AERO[numAF+13][t]+AERO[36][t]+AERO[numAF+33][t]+AERO[40][t]+AERO[numAF+37][t]+AERO[42][t],
+					AERO[0][t]+AERO[2][t]+AERO[14][t]+AERO[15][t]+AERO[17][t]+AERO[18][t]+AERO[33][t]+AERO[34][t]+AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[numAF+8][t]+AERO[numAF+10][t]+AERO[numAF+12][t]+AERO[35][t]+AERO[numAF+32][t]+AERO[39][t]+AERO[numAF+36][t]+AERO[41][t],
 					//C
-					AERO[numAF+17][t]+AERO[numAF+19][t]+AERO[numAF+21][t]+AERO[38][t]+AERO[numAF+35][t]+AERO[numAF+1][t]+AERO[numAF+3][t]+AERO[numAF+5][t]+AERO[36][t]+AERO[numAF+33][t]+AERO[40][t]+AERO[numAF+37][t],
-					AERO[numAF+16][t]+AERO[numAF+18][t]+AERO[numAF+20][t]+AERO[37][t]+AERO[numAF+34][t]+AERO[numAF][t]+AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[35][t]+AERO[numAF+32][t]+AERO[39][t]+AERO[numAF+36][t],
+					AERO[numAF+17][t]+AERO[numAF+19][t]+AERO[numAF+21][t]+AERO[38][t]+AERO[numAF+35][t]+AERO[numAF+1][t]+AERO[numAF+3][t]+AERO[numAF+5][t]+AERO[36][t]+AERO[numAF+33][t]+AERO[40][t]+AERO[numAF+37][t]+AERO[42][t],
+					AERO[numAF+16][t]+AERO[numAF+18][t]+AERO[numAF+20][t]+AERO[37][t]+AERO[numAF+34][t]+AERO[numAF][t]+AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[35][t]+AERO[numAF+32][t]+AERO[39][t]+AERO[numAF+36][t]+AERO[41][t],
 					//2017
-					AERO[1][t]+AERO[5][t]+AERO[7][t]+AERO[9][t]+AERO[11][t]+AERO[13][t]+AERO[numAF+1][t]+AERO[numAF+3][t]+AERO[numAF+5][t]+AERO[numAF+9][t]+AERO[numAF+11][t]+AERO[36][t]+AERO[numAF+33][t]+AERO[40][t]+AERO[numAF+37][t],
-					AERO[0][t]+AERO[4][t]+AERO[6][t]+AERO[8][t]+AERO[10][t]+AERO[12][t]+AERO[numAF][t]+AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[numAF+8][t]+AERO[numAF+10][t]+AERO[35][t]+AERO[numAF+32][t]+AERO[39][t]+AERO[numAF+36][t],
+					AERO[1][t]+AERO[5][t]+AERO[7][t]+AERO[9][t]+AERO[11][t]+AERO[13][t]+AERO[numAF+1][t]+AERO[numAF+3][t]+AERO[numAF+5][t]+AERO[numAF+9][t]+AERO[numAF+11][t]+AERO[36][t]+AERO[numAF+33][t]+AERO[40][t]+AERO[numAF+37][t]+AERO[42][t],
+					AERO[0][t]+AERO[4][t]+AERO[6][t]+AERO[8][t]+AERO[10][t]+AERO[12][t]+AERO[numAF][t]+AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[numAF+8][t]+AERO[numAF+10][t]+AERO[35][t]+AERO[numAF+32][t]+AERO[39][t]+AERO[numAF+36][t]+AERO[41][t],
 					//2018
-					AERO[1][t]+AERO[5][t]+AERO[7][t]+AERO[9][t]+AERO[11][t]+AERO[13][t]+AERO[16][t]+AERO[19][t]+AERO[numAF+3][t]+AERO[numAF+5][t]+AERO[numAF+9][t]+AERO[numAF+11][t]+AERO[numAF+13][t]+AERO[36][t]+AERO[numAF+33][t]+AERO[40][t]+AERO[numAF+37][t],
-					AERO[0][t]+AERO[4][t]+AERO[6][t]+AERO[8][t]+AERO[10][t]+AERO[12][t]+AERO[14][t]+AERO[15][t]+AERO[17][t]+AERO[18][t]+AERO[33][t]+AERO[34][t]+AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[numAF+8][t]+AERO[numAF+10][t]+AERO[numAF+12][t]+AERO[35][t]+AERO[numAF+32][t]+AERO[39][t]+AERO[numAF+36][t]);
-			} else {
-				fprintf (histFile, "%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t",
+					AERO[1][t]+AERO[5][t]+AERO[7][t]+AERO[9][t]+AERO[11][t]+AERO[13][t]+AERO[16][t]+AERO[19][t]+AERO[numAF+3][t]+AERO[numAF+5][t]+AERO[numAF+9][t]+AERO[numAF+11][t]+AERO[numAF+13][t]+AERO[36][t]+AERO[numAF+33][t]+AERO[40][t]+AERO[numAF+37][t]+AERO[42][t],
+					AERO[0][t]+AERO[4][t]+AERO[6][t]+AERO[8][t]+AERO[10][t]+AERO[12][t]+AERO[14][t]+AERO[15][t]+AERO[17][t]+AERO[18][t]+AERO[33][t]+AERO[34][t]+AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[numAF+8][t]+AERO[numAF+10][t]+AERO[numAF+12][t]+AERO[35][t]+AERO[numAF+32][t]+AERO[39][t]+AERO[numAF+36][t]+AERO[41][t]);
+					break;
+				case 2:
+					fprintf (histFile, "%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t",
 					//LIU
-					AERO[1][t]+AERO[21][t]+AERO[numAF+15][t]+AERO[numAF+1][t]+AERO[numAF+9][t]+AERO[36][t]+Clf_nf[t],
-					AERO[0][t]+AERO[20][t]+AERO[numAF+14][t]+AERO[numAF][t]+AERO[numAF+8][t]+AERO[35][t]+Cdf_nf[t],
+					AERO[1][t]+AERO[21][t]+AERO[numAF+15][t]+AERO[numAF+1][t]+AERO[numAF+9][t]+AERO[36][t]+Clf_nf[t]+AERO[42][t],
+					AERO[0][t]+AERO[20][t]+AERO[numAF+14][t]+AERO[numAF][t]+AERO[numAF+8][t]+AERO[35][t]+Cdf_nf[t]+AERO[41][t],
 					//2014
-					AERO[1][t]+AERO[3][t]+AERO[numAF+1][t]+AERO[numAF+9][t]+AERO[numAF+11][t]+AERO[36][t]+Clf_nf[t],
-					AERO[0][t]+AERO[2][t]+AERO[numAF][t]+AERO[numAF+8][t]+AERO[numAF+10][t]+AERO[35][t]+Cdf_nf[t],
+					AERO[1][t]+AERO[3][t]+AERO[numAF+1][t]+AERO[numAF+9][t]+AERO[numAF+11][t]+AERO[36][t]+Clf_nf[t]+AERO[42][t],
+					AERO[0][t]+AERO[2][t]+AERO[numAF][t]+AERO[numAF+8][t]+AERO[numAF+10][t]+AERO[35][t]+Cdf_nf[t]+AERO[41][t],
 					//MIX
-					AERO[1][t]+AERO[3][t]+AERO[16][t]+AERO[19][t]+AERO[numAF+9][t]+AERO[numAF+11][t]+AERO[numAF+13][t]+AERO[36][t]+Clf_nf[t],
-					AERO[0][t]+AERO[2][t]+AERO[14][t]+AERO[15][t]+AERO[17][t]+AERO[18][t]+AERO[33][t]+AERO[34][t]+AERO[numAF+8][t]+AERO[numAF+10][t]+AERO[numAF+12][t]+AERO[35][t]+Cdf_nf[t],
+					AERO[1][t]+AERO[3][t]+AERO[16][t]+AERO[19][t]+AERO[numAF+9][t]+AERO[numAF+11][t]+AERO[numAF+13][t]+AERO[36][t]+Clf_nf[t]+AERO[42][t],
+					AERO[0][t]+AERO[2][t]+AERO[14][t]+AERO[15][t]+AERO[17][t]+AERO[18][t]+AERO[33][t]+AERO[34][t]+AERO[numAF+8][t]+AERO[numAF+10][t]+AERO[numAF+12][t]+AERO[35][t]+Cdf_nf[t]+AERO[41][t],
 					//C
 					NAN,
 					NAN,
@@ -4362,14 +4420,115 @@ int main(int argc, char** argv) {
 					//2018
 					NAN,
 					NAN);
+					break;
+				case 3:
+					fprintf (histFile, "%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t",
+					//LIU
+					AERO[1][t]+AERO[21][t]+AERO[numAF+15][t]+AERO[numAF+1][t]+AERO[numAF+9][t]+Clf_nf[t]+AERO[42][t],
+					AERO[0][t]+AERO[20][t]+AERO[numAF+14][t]+AERO[numAF][t]+AERO[numAF+8][t]+Cdf_nf[t]+AERO[41][t],
+					//2014
+					AERO[1][t]+AERO[3][t]+AERO[numAF+1][t]+AERO[numAF+9][t]+AERO[numAF+11][t]+Clf_nf[t]+AERO[42][t],
+					AERO[0][t]+AERO[2][t]+AERO[numAF][t]+AERO[numAF+8][t]+AERO[numAF+10][t]+Cdf_nf[t]+AERO[41][t],
+					//MIX
+					NAN,
+					NAN,
+					//C
+					NAN,
+					NAN,
+					//2017
+					NAN,
+					NAN,
+					//2018
+					NAN,
+					NAN);
+					break;
 			}
-			fprintf (histFile, "%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t",
-				AERO[1][t], AERO[21][t]+AERO[numAF+15][t], AERO[3][t], AERO[5][t]+AERO[7][t]+AERO[9][t]+AERO[11][t]+AERO[13][t], AERO[numAF+17][t]+AERO[numAF+19][t]+AERO[numAF+21][t]+AERO[38][t],
-					AERO[numAF+1][t], AERO[16][t]+AERO[19][t], AERO[numAF+3][t]+AERO[numAF+5][t], -AERO[numAF+7][t], -AERO[25][t], AERO[36][t], AERO[40][t]);
-			fprintf (histFile, "%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t",
-				AERO[0][t], AERO[20][t]+AERO[numAF+14][t], AERO[2][t], AERO[4][t]+AERO[6][t]+AERO[8][t]+AERO[10][t]+AERO[12][t], AERO[numAF+16][t]+AERO[numAF+18][t]+AERO[numAF+20][t]+AERO[37][t],
-					AERO[numAF][t], AERO[14][t]+AERO[15][t]+AERO[33][t]+AERO[17][t]+AERO[18][t]+AERO[34][t], AERO[numAF+2][t]+AERO[numAF+4][t], AERO[numAF+6][t], AERO[22][t]+AERO[23][t]+AERO[24][t],
-					AERO[35][t], AERO[39][t]);
+			switch (Lamb_form) {
+				case 0: case 1:	//The turbulent term is added to the F_mu term, even for case Lamb_Form=0, since it will not be computed in this case and retain its zero initialization.
+					fprintf (histFile, "%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t",
+						AERO[1][t],	//Cl_LAMB
+						AERO[21][t]+AERO[numAF+15][t],	//Cl_RHO
+						AERO[3][t],	//Cl_M-RHO
+						AERO[5][t]+AERO[7][t]+AERO[9][t]+AERO[11][t]+AERO[13][t], //Cl_M-RHO-C
+						AERO[numAF+17][t]+AERO[numAF+19][t]+AERO[numAF+21][t]+AERO[38][t],	//Cl_RHO+LAMB
+						AERO[numAF+1][t],	//Cl_S
+						AERO[16][t]+AERO[19][t],	//Cl_S-OMEGA
+						AERO[numAF+3][t]+AERO[numAF+5][t]+AERO[42][t],	//Cl_MU-T
+						-AERO[numAF+7][t],	//Cl_GRAD-RHO
+						-AERO[25][t],	//Cl_GRAD-RHO-OMEGA
+						AERO[36][t],	//Cl_UNS
+						AERO[40][t]);	//Cl_APP
+					fprintf (histFile, "%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t",
+						AERO[0][t],	//Cd_LAMB
+						AERO[20][t]+AERO[numAF+14][t],	//Cd_RHO
+						AERO[2][t],	//Cd_M-RHO
+						AERO[4][t]+AERO[6][t]+AERO[8][t]+AERO[10][t]+AERO[12][t],	//Cd_M-RHO-C
+						AERO[numAF+16][t]+AERO[numAF+18][t]+AERO[numAF+20][t]+AERO[37][t],	//Cd_RHO+LAMB
+						AERO[numAF][t],	//Cd_S
+						AERO[14][t]+AERO[15][t]+AERO[33][t]+AERO[17][t]+AERO[18][t]+AERO[34][t],	//Cd_S-OMEGA
+						AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t],	//Cd_MU-T
+						AERO[numAF+6][t],	//Cd_GRAD-RHO
+						AERO[22][t]+AERO[23][t]+AERO[24][t],	//Cd_GRAD-RHO-OMEGA
+						AERO[35][t],	//Cd_UNS
+						AERO[39][t]);	//Cd_APP
+					break;
+				case 2:
+					fprintf (histFile, "%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t",
+						AERO[1][t],	//Cl_LAMB
+						AERO[21][t]+AERO[numAF+15][t],	//Cl_RHO
+						AERO[3][t],	//Cl_M-RHO
+						NAN, //Cl_M-RHO-C
+						NAN,	//Cl_RHO+LAMB
+						AERO[numAF+1][t],	//Cl_S
+						AERO[16][t]+AERO[19][t],	//Cl_S-OMEGA
+						AERO[42][t],	//Cl_TURB
+						-AERO[numAF+7][t],	//Cl_GRAD-RHO
+						-AERO[25][t],	//Cl_GRAD-RHO-OMEGA
+						AERO[36][t],	//Cl_UNS
+						AERO[40][t]);	//Cl_APP
+					fprintf (histFile, "%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t",
+						AERO[0][t],	//Cd_LAMB
+						AERO[20][t]+AERO[numAF+14][t],	//Cd_RHO
+						AERO[2][t],	//Cd_M-RHO
+						NAN,	//Cd_M-RHO-C
+						NAN,	//Cd_RHO+LAMB
+						AERO[numAF][t],	//Cd_S
+						AERO[14][t]+AERO[15][t]+AERO[33][t]+AERO[17][t]+AERO[18][t]+AERO[34][t],	//Cd_S-OMEGA
+						AERO[41][t],	//Cd_TURB
+						AERO[numAF+6][t],	//Cd_GRAD-RHO
+						AERO[22][t]+AERO[23][t]+AERO[24][t],	//Cd_GRAD-RHO-OMEGA
+						AERO[35][t],	//Cd_UNS
+						AERO[39][t]);	//Cd_APP
+					break;
+				case 3:
+					fprintf (histFile, "%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t",
+						AERO[1][t]-AERO[36][t]-AERO[40][t]-AERO[numAF+5][t]+Clf_nf[t],	//Cl_LAMB
+						AERO[21][t]+AERO[numAF+15][t],	//Cl_RHO
+						AERO[3][t],	//Cl_M-RHO
+						NAN,	//Cl_M-RHO-C
+						NAN,	//Cl_RHO+LAMB
+						AERO[numAF+1][t]-AERO[numAF+33][t]-AERO[numAF+37][t]-AERO[numAF+3][t],	//Cl_S
+						NAN,	//Cl_S-OMEGA
+						AERO[numAF+3][t]+AERO[numAF+5][t]+AERO[42][t],	//Cl_MU-T
+						-AERO[numAF+7][t],	//Cl_GRAD-RHO
+						-AERO[25][t],	//Cl_GRAD-RHO-OMEGA
+						AERO[36][t],	//Cl_UNS
+						AERO[40][t]);	//Cl_APP
+					fprintf (histFile, "%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t",
+						AERO[0][t]-AERO[35][t]-AERO[39][t]-AERO[numAF+4][t]+Cdf_nf[t],	//Cd_LAMB
+						AERO[20][t]+AERO[numAF+14][t],	//Cd_RHO
+						AERO[2][t],	//Cd_M-RHO
+						NAN,	//Cd_M-RHO-C
+						NAN,	//Cd_RHO+LAMB
+						AERO[numAF][t]-AERO[numAF+32][t]-AERO[numAF+36][t]-AERO[numAF+2][t],	//Cd_S
+						NAN,	//Cd_S-OMEGA
+						AERO[numAF+2][t]+AERO[numAF+4][t]+AERO[41][t],	//Cd_MU-T
+						AERO[numAF+6][t],	//Cd_GRAD-RHO
+						AERO[22][t]+AERO[23][t]+AERO[24][t],	//Cd_GRAD-RHO-OMEGA
+						AERO[35][t],	//Cd_UNS
+						AERO[39][t]);	//Cd_APP
+				break;
+			}
 			fprintf (histFile, "%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t",
 				AERO[numAF+9][t], AERO[numAF+11][t], AERO[numAF+35][t], AERO[numAF+13][t], AERO[numAF+33][t], AERO[numAF+37][t]);
 			fprintf (histFile, "%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E\t%22.15E",
@@ -4448,6 +4607,8 @@ int main(int argc, char** argv) {
 			"Elem. Unsteady term coeff. (C-formulation volume integrand | z-component)",
 			"Elem. Non-Inertial term coeff. (volume integrand | x-component)",
 			"Elem. Non-Inertial term coeff. (volume integrand | z-component)",
+			"Elem. Turbulent term coeff. (x-component)",
+			"Elem. Turbulent term coeff. (z-component)",
 			"Shock wave domain FLAG",
 			"Viscous domain FLAG",
 			"Wave drag domain FLAG (vortical)",
@@ -4495,6 +4656,8 @@ int main(int argc, char** argv) {
 			"Unsteady term coeff. (C-formulation volume integral | z-component)",
 			"Non-Inertial term coeff. (volume integral | x-component)",
 			"Non-Inertial term coeff. (volume integral | z-component)",
+			"Turbulent term coeff. (x-component)",
+			"Turbulent term coeff. (z-component)",
 			"Lamb vect. circ. mom. coeff. SURFACE form. (x-component)",
 			"Lamb vect. circ. mom. coeff. SURFACE form. (z-component)",
 			"Explicit viscous stress contribution coeff. (1st term | x-component)",
